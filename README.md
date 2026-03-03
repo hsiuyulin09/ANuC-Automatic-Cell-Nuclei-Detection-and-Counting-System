@@ -1,12 +1,12 @@
-<span style="font-size: 20px; font-weight: bold;">ANuC 自動化免疫螢光染色細胞核偵測及計數系統</span><br>
-<span style="font-size: 12px; font-weight: bold;">Automatic Cell Nuclei Detection and Counting System</span><br>
+## **ANuC 自動化免疫螢光染色細胞核偵測及計數系統**
+Automatic Cell Nuclei Detection and Counting System</span><br>
 
 <span style="font-size: 12px;">
 &emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統，用於分析免疫螢光分析(Immunofluorescence assay, IFA)當中的DAPI通道螢光顯微照片。透過影像調整、原始圖切割、UNet模型(PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。
 </span><br><br><br>
 
-<span style="font-size: 16px; font-weight: bold;">
-I. 流程</span><br>
+
+### I. 流程</span><br>
 <span style="font-size: 12px;">
 &emsp;&emsp;請依序執行以下檔案及功能。<br><br>
 
@@ -48,8 +48,7 @@ I. 流程</span><br>
 &emsp;&emsp;使用Watershed algorithm對細胞核區域做分割<br>
 輸出 : 輸出一個輸入.h5對應檔名的資料夾，在資料夾中輸出label map, heatmap及原圖的.png檔案及.txt計數結果<br><br><br>
 
-<span style="font-size: 16px; font-weight: bold;">
-II. 環境需求</span><br>
+### II. 環境需求</span><br>
 <span style="font-size: 12px;">
 &emsp;&emsp;*開發環境Python 3.13, PyTorch 2.10, Labelme 5.10, Jupyter Notebook 7.5, JupyterLab 4.5<br>
 &emsp;&emsp;*建議使用 conda 或 venv 建立虛擬環境<br>
@@ -65,18 +64,17 @@ pip install numpy pandas opencv-python scikit-image matplotlib torch torchvision
 ```bash
 pip install labelme
 ```
-<br><br><br>
-<span style="font-size: 16px; font-weight: bold;">
-III. 未來計畫</span><br>
+
+### III. 未來計畫</span><br>
 &emsp;&emsp;最初專案建地動機為作者過去任職wet lab進行研究與開發工作，執行IFA蛋白質位置overlap分析時遇到細胞分割困難、計算繁瑣且耗時，因此嘗試開發更省時的自動化系統。目前版本先完成對細胞核位置的定位與細胞分割部分。未來將強化細胞分割與形狀認知能力，並加入IFA其他通道圖並合併Merge圖分析。
 <br><br>
 
-<span style="font-size: 16px; font-weight: bold;">
-特別感謝</span><br>
+
+### 特別感謝</span><br>
 感謝 <a href="https://www.erixnet.com/">EriXNet</a> 對開發的協助與顧問工作
-<br><br>
-<span style="font-size: 16px; font-weight: bold;">
-關於作者<br>
+
+
+### 關於作者<br>
 林修渝 Hsiu-Yu, Lin</span><br>
 <span style="font-size: 12px; font-weight: bold;">
 臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br>
@@ -85,10 +83,14 @@ GitHub : https://github.com/hsiuyulin09
 </span>
 <br><br>
 
-<span style="font-size: 12px;">
+<span style="font-size: 12px; font-weight: bold;">
 <img src="./pictures/Python.png"style="width: 7.6%;" alt="pyhton logo">
 <img src="./pictures/PyTorch_logo.png"style="width: 3.5%;" alt="pytorch logo">
 &emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupter logo">
 &emsp;<img src="./pictures/icon-256.png"style="width: 4%;" alt="labelme logo">
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="labelme logo">
+
 </span>
+
+
+
