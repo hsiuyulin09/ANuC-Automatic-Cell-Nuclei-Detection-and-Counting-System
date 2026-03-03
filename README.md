@@ -1,4 +1,4 @@
-<span style="font-size: 20px; font-weight: bold;">ANuC 自動化免疫螢光染色細胞核偵測及計數系統</span><br>
+<span style="font-size: 20px; font-weight: bold;">**ANuC 自動化免疫螢光染色細胞核偵測及計數系統**</span><br>
 <span style="font-size: 12px; font-weight: bold;">Automatic Cell Nuclei Detection and Counting System</span><br>
 
 <span style="font-size: 12px;">
@@ -91,4 +91,5 @@ GitHub : https://github.com/hsiuyulin09
 &emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupter logo">
 &emsp;<img src="./pictures/icon-256.png"style="width: 4%;" alt="labelme logo">
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="labelme logo">
+
 </span>
