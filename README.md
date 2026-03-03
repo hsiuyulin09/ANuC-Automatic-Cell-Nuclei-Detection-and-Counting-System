@@ -85,7 +85,6 @@ GitHub : https://github.com/hsiuyulin09
 </span>
 <br><br>
 
-<span style="font-size: 12px;">
 <img src="./pictures/Python.png"style="width: 7.6%;" alt="pyhton logo">
 <img src="./pictures/PyTorch_logo.png"style="width: 3.5%;" alt="pytorch logo">
 &emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupter logo">
@@ -93,3 +92,4 @@ GitHub : https://github.com/hsiuyulin09
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="labelme logo">
 
 </span>
+
