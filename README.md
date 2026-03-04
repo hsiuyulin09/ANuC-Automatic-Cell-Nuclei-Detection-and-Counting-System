@@ -2,7 +2,7 @@
 Automatic Cell Nuclei Detection and Counting System</span><br>
 
 <span style="font-size: 12px;">
-&emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統，用於分析免疫螢光分析(Immunofluorescence assay, IFA)當中的DAPI通道螢光顯微照片。透過影像調整、原始圖切割、UNet模型(PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。
+&emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統，用於分析免疫螢光分析(Immuno-fluorescence assay, IFA)當中的DAPI通道螢光顯微照片。透過影像調整、原始圖切割、UNet模型(PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。
 </span><br><br><br>
 
 
@@ -56,7 +56,7 @@ Automatic Cell Nuclei Detection and Counting System</span><br>
 #安裝套件
 
 ```bash
-pip install numpy pandas opencv-python scikit-image matplotlib torch torchvision h5py scipy<br>
+pip install numpy pandas opencv-python scikit-image matplotlib torch torchvision h5py scipy
 ```
 <br>
 #安裝Labelme
