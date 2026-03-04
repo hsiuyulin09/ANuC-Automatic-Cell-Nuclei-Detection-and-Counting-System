@@ -2,7 +2,7 @@
 Automatic Cell Nuclei Detection and Counting System</span><br><br>
 
 <p align="left">
-  <img src="./pictures/logo.png" align="left" width="180" style="margin-right: 20px;">
+  <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
   <br>
   <b>&emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。</b><br>
 </p>
@@ -14,16 +14,16 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
   <table style="border: none; border-collapse: collapse; background-color: transparent;">
     <tr style="border: none; background-color: transparent;">
       <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_origin.png" width="100%" alt="Original">
+        <img src="./pictures/20211224_origin.png" width="190" alt="Original">
       </td>
       <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_heatmap.png" width="100%" alt="Heatmap">
+        <img src="./pictures/20211224_heatmap.png" width="190" alt="Heatmap">
       </td>
       <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_counter.png" width="100%" alt="Contour">
+        <img src="./pictures/20211224_counter.png" width="190" alt="Contour">
       </td>
       <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/point1.png" width="100%" alt="Zoom in">
+        <img src="./pictures/point1.png" width="190" alt="Zoom in">
       </td>
     </tr>
     <tr style="border: none; background-color: transparent; font-size: 11px; font-weight: bold;">
