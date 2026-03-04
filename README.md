@@ -3,8 +3,15 @@ Automatic Cell Nuclei Detection and Counting System</span><br>
 
 <span style="font-size: 12px;">
 &emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統，用於分析免疫螢光分析(Immuno-fluorescence assay, IFA)當中的DAPI通道螢光顯微照片。透過影像調整、原始圖切割、UNet模型(PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。
-</span><br><br><br>
+</span><br><br>
 
+### 結果展示<br>
+<span style="font-size: 10px; font-weight: bold;">
+<img src="./pictures/20211224_origin.png"style="width: 24%;" alt="img 1 org">
+<img src="./pictures/20211224_heatmap.png"style="width: 24%;" alt="img 1 heat">
+<img src="./pictures/20211224_counter.png"style="width: 24%;" alt="img 1 org">
+<img src="./pictures/point1.png"style="width: 24%;" alt="img 1 org"><br>
+FIG.1-1 Original image&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-2 Heatmap&ensp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-3 Contour extraction &emsp;&emsp;&emsp;FIG.1-4 Zoom in<br>
 
 ### I. 流程</span><br>
 <span style="font-size: 12px;">
@@ -46,7 +53,10 @@ Automatic Cell Nuclei Detection and Counting System</span><br>
 &emsp;&emsp;讀取"prediction_result"資料夾中的.h5，將probability map轉換為label map, heatmap及計數輸出(兩類輸出圖及統計數字皆不包含接觸影像邊界的細胞)。<br>
 技術 : 使用distance transform計算距離變換<br>
 &emsp;&emsp;使用Watershed algorithm對細胞核區域做分割<br>
-輸出 : 輸出一個輸入.h5對應檔名的資料夾，在資料夾中輸出label map, heatmap及原圖的.png檔案及.txt計數結果<br><br><br>
+輸出 : 輸出一個輸入.h5對應檔名的資料夾，在資料夾中輸出label map, heatmap及原圖的.png檔案及.txt計數結果<br>
+
+<span style="font-size: 12px;">
+<img src="./pictures/"style="width: 24%;" alt="img 1 org"><br><br>
 
 ### II. 環境需求</span><br>
 <span style="font-size: 12px;">
@@ -88,7 +98,7 @@ GitHub : https://github.com/hsiuyulin09
 <img src="./pictures/PyTorch_logo.png"style="width: 3.5%;" alt="pytorch logo">
 &emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupter logo">
 &emsp;<img src="./pictures/icon-256.png"style="width: 4%;" alt="labelme logo">
-&emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="labelme logo">
+&emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="erixnet logo">
 
 </span>
 
