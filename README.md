@@ -26,7 +26,7 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
         <img src="./pictures/point1.png" width="190" alt="Zoom in">
       </td>
     </tr>
-    <tr style="border: none; background-color: transparent; font-size: 9px; font-weight: bold;">
+    <tr style="border: none; background-color: transparent; font-size: 6px; font-weight: bold;">
       <td style="border: none; background-color: transparent;">FIG.1-1 Original image</td>
       <td style="border: none; background-color: transparent;">FIG.1-2 Heatmap</td>
       <td style="border: none; background-color: transparent;">FIG.1-3 Contour extraction</td>
