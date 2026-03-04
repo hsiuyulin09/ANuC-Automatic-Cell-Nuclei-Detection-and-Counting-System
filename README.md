@@ -1,17 +1,36 @@
 ## **ANuC 自動化免疫螢光染色細胞核偵測及計數系統**
 Automatic Cell Nuclei Detection and Counting System</span><br>
-
-<span style="font-size: 12px;">
-&emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統，用於分析免疫螢光分析(Immuno-fluorescence assay, IFA)當中的DAPI通道螢光顯微照片。透過影像調整、原始圖切割、UNet模型(PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。
-</span><br><br>
+<table style="border: none; border-collapse: collapse; width: 100%;">
+  <tr>
+    <td style="width: 45%; border: none; vertical-align: middle; text-align: center;">
+      <img src="./pictures/logo.png" width="80%" alt="ANuC Logo">
+    </td>
+    <td style="width: 70%; border: none; vertical-align: middle; line-height: 1.6;">
+      <span style="font-size: 12px; font-weight: bold;">
+        本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。
+      </span>
+    </td>
+  </tr>
+</table>
 
 ### 結果展示<br>
-<span style="font-size: 10px; font-weight: bold;">
-<img src="./pictures/20211224_origin.png"style="width: 24%;" alt="img 1 org">
-<img src="./pictures/20211224_heatmap.png"style="width: 24%;" alt="img 1 heat">
-<img src="./pictures/20211224_counter.png"style="width: 24%;" alt="img 1 count">
-<img src="./pictures/point1.png"style="width: 24%;" alt="img 1 point"><br>
-FIG.1-1 Original image&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-2 Heatmap&ensp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-3 Contour extraction &emsp;&emsp;&emsp;FIG.1-4 Zoom in<br>
+<div align="center">
+  <table style="width: 100%; text-align: center; border-collapse: collapse;">
+    <tr>
+      <td style="width: 25%; border: none;"><img src="./pictures/20211224_origin.png" width="100%" alt="Original"></td>
+      <td style="width: 25%; border: none;"><img src="./pictures/20211224_heatmap.png" width="100%" alt="Heatmap"></td>
+      <td style="width: 25%; border: none;"><img src="./pictures/20211224_counter.png" width="100%" alt="Contour"></td>
+      <td style="width: 25%; border: none;"><img src="./pictures/point1.png" width="100%" alt="Zoom in"></td>
+    </tr>
+    <tr style="font-size:11px; font-weight: bold;">
+      <td style="border: none;">FIG.1-1 Original image</td>
+      <td style="border: none;">FIG.1-2 Heatmap</td>
+      <td style="border: none;">FIG.1-3 Contour extraction</td>
+      <td style="border: none;">FIG.1-4 Zoom in</td>
+    </tr>
+  </table>
+</div>
+<br>
 
 ### I. 流程</span><br>
 <span style="font-size: 12px;">
