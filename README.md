@@ -9,8 +9,8 @@ Automatic Cell Nuclei Detection and Counting System</span><br>
 <span style="font-size: 10px; font-weight: bold;">
 <img src="./pictures/20211224_origin.png"style="width: 24%;" alt="img 1 org">
 <img src="./pictures/20211224_heatmap.png"style="width: 24%;" alt="img 1 heat">
-<img src="./pictures/20211224_counter.png"style="width: 24%;" alt="img 1 org">
-<img src="./pictures/point1.png"style="width: 24%;" alt="img 1 org"><br>
+<img src="./pictures/20211224_counter.png"style="width: 24%;" alt="img 1 count">
+<img src="./pictures/point1.png"style="width: 24%;" alt="img 1 point"><br>
 FIG.1-1 Original image&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-2 Heatmap&ensp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-3 Contour extraction &emsp;&emsp;&emsp;FIG.1-4 Zoom in<br>
 
 ### I. 流程</span><br>
@@ -55,8 +55,11 @@ FIG.1-1 Original image&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;FIG.1-2 Heatmap&ensp;&
 &emsp;&emsp;使用Watershed algorithm對細胞核區域做分割<br>
 輸出 : 輸出一個輸入.h5對應檔名的資料夾，在資料夾中輸出label map, heatmap及原圖的.png檔案及.txt計數結果<br>
 
+### Pipeline Architecture
 <span style="font-size: 12px;">
-<img src="./pictures/"style="width: 24%;" alt="img 1 org"><br><br>
+<div align="center">
+<img src="./pictures/Pipeline Architecture.png"style="width: 80%;" alt="pipline"><br><br>
+</div>
 
 ### II. 環境需求</span><br>
 <span style="font-size: 12px;">
@@ -87,7 +90,7 @@ pip install labelme
 ### 關於作者<br>
 林修渝 Hsiu-Yu, Lin</span><br>
 <span style="font-size: 12px; font-weight: bold;">
-臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br>
+臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br><br>
 生物化學碩士，曾任職中央研究院生醫所研究助理，現職為人工智慧生物醫學資料科學家。專長是生物化學、癌症細胞生物學、外泌體分析及生物醫學影像分析。<br>
 GitHub : https://github.com/hsiuyulin09
 </span>
