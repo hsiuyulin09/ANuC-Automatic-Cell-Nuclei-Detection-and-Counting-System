@@ -41,12 +41,12 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 ### **目錄** </span><br>
 [成果展示](#成果展示)<br>
 [I. 流程](#i-流程)<br>
-&emsp;[1. 影像前處理](#1-影像前處理-01_figure_preprocessingipynb)<br>
-&emsp;[2. Labelme 遮罩產生](#2-labelme-遮罩產生)<br>
-&emsp;[3. 標記轉換](#3-標記轉換-02_cell_label_maskipynb)<br>
-&emsp;[4. 數據封裝](#4-數據封裝-03_data_package_h5_generationipynb)<br>
-&emsp;[5. 模型訓練與預測](#5-模型訓練與預測-04_modelipynb)<br>
-&emsp;[6. 後處理及計數](#6-後處理及計數-05_post_processingipynb)<br>
+&emsp;[1. 影像前處理](#step1)<br>
+&emsp;[2. Labelme 遮罩產生](#step2)<br>
+&emsp;[3. 標記轉換](#step3)<br>
+&emsp;[4. 數據封裝](#step4)<br>
+&emsp;[5. 模型訓練與預測](#step5)<br>
+&emsp;[6. 後處理及計數](#step6)<br>
 &emsp;[Pipeline Architecture](#pipeline-architecture)<br>
 [II.環境需求](#ii-環境需求)<br>
 [III.未來計畫](#iii-未來計畫)<br>
@@ -59,31 +59,31 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 <span style="font-size: 12px;">
 請依序執行以下檔案及功能。<br><br>
 
-1. 影像前處理 (01_figure_preprocessing.ipynb)<br>
+1. 影像前處理 (01_figure_preprocessing.ipynb)<a name="step1"></a><br>
 初次使用時先執行一次以產生所需目錄，將預定將轉為training set的訓練圖片原圖放入"preprocessing_input"資料夾，執行第二次程式將會讀取"preprocessing_input"資料夾中的圖片進行處理。輸出經數值調整、雙通道灰階及切割後圖片。<br>
     * 技術 : 使用CLAHE調整影像直方圖<br>
 使用Sliding Window切割影像，預設尺寸為256*256, overlap=30<br>
     * 輸出 : 輸出.png至"preprocessing_output"及"preprocessing_check"資料夾。<br>
-("preprocessing_check"檔案為經數值調整、雙通道灰階但未切割原尺寸圖，供人工檢查)<br><br>
+      ("preprocessing_check"檔案為經數值調整、雙通道灰階但未切割原尺寸圖，供人工檢查)<br><br>
 
-2. Labelme 遮罩產生<br>
+2. Labelme 遮罩產生<a name="step2"></a><br>
 透過開源軟體做人工data label。在Labelme中指定讀取"preprocessing_output"資料夾，進行細胞範圍手動標記。<br>
     * 輸出 : 輸出.json至"preprocessing_output"資料夾<br><br>
 
-3. 標記轉換 (02_cell_label_mask.ipynb)<br>
+3. 標記轉換 (02_cell_label_mask.ipynb)<a name="step3"></a><br>
 讀取"preprocessing_output"資料夾，將Labelme結果.json轉換成黑白遮罩圖。<br>
     * 技術 : 使用Binary Mask二值化將Labelme生成的JSON格式轉換為黑白遮罩圖<br>
     * 輸出 : 輸出.png至"masks_output"和"masks_check"資料夾<br>
 ("masks_check"資料夾為合併灰階圖及遮罩，供人工檢查)<br><br>
 
-4. 數據封裝 (03_data_package_h5_generation.ipynb)<br>
+4. 數據封裝 (03_data_package_h5_generation.ipynb)<a name="step4"></a><br>
 整合影像與遮罩並寫入.h5。<br>
     * 技術 : 使用h5py將影像與遮罩封裝成.h5<br>
     * 輸出 : 輸出.h5至同級目錄<br><br>
 
-5. 模型訓練與預測 (04_model.ipynb)<br>
+5. 模型訓練與預測 (04_model.ipynb)<a name="step5"></a><br>
     * 訓練模式<br>
-main block預設mode='prediction'，訓練時先改成mode='train'，讀取來自數據封裝結果的.h5進行訓練。<br>
+      main block預設mode='prediction'，訓練時先改成mode='train'，讀取來自數據封裝結果的.h5進行訓練。<br>
       * 架構 : UNet<br>
       * Loss function : BCE Loss function結合Dice Loss function<br>
     * 預測模式<br>
@@ -91,13 +91,13 @@ main block預設mode='prediction'，訓練時先改成mode='train'，讀取來�
       * 技術 : 使用weight mask處理邊界拼時的痕跡<br>
       * 輸出 : 輸出.h5至"prediction_result"資料夾<br><br>
 
-6. 後處理及計數 (05_post_processing.ipynb)<br>
+6. 後處理及計數 (05_post_processing.ipynb)<a name="step6"></a><br>
 讀取"prediction_result"資料夾中的.h5，將probability map轉換為label map, heatmap及計數輸出(兩類輸出圖及統計數字皆不包含接觸影像邊界的細胞)。<br>
     * 技術 : 使用distance transform計算距離變換<br>
 使用Watershed algorithm對細胞核區域做分割<br>
     * 輸出 : 輸出一個輸入.h5對應檔名的資料夾，在資料夾中輸出label map, heatmap及原圖的.png檔案及.txt計數結果<br>
 
-### Pipeline Architecture
+### Pipeline Architecture <a name="pipeline-architecture"></a>
 <span style="font-size: 12px;">
 <div align="center">
 <img src="./pictures/Pipeline Architecture.png"style="width: 80%;" alt="pipline"><br><br>
