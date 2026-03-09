@@ -4,7 +4,7 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 <p align="left">
   <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
   <br>
-  <b>&emsp;&emsp;本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。</b><br>
+  <b>本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。</b><br>
 </p>
 <br clear="left"/>
 
@@ -34,6 +34,26 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
     </tr>
   </table>
 </div>
+<br>
+
+---
+
+### **目錄** </span><br>
+[成果展示](#成果展示)<br>
+[I. 流程](#i-流程)<br>
+&emsp;[1. 影像前處理](#1-影像前處理-01_figure_preprocessingipynb)<br>
+&emsp;[2. Labelme 遮罩產生](#2-labelme-遮罩產生)<br>
+&emsp;[3. 標記轉換](#3-標記轉換-02_cell_label_maskipynb)<br>
+&emsp;[4. 數據封裝](#4-數據封裝-03_data_package_h5_generationipynb)<br>
+&emsp;[5. 模型訓練與預測](#5-模型訓練與預測-04_modelipynb)<br>
+&emsp;[6. 後處理及計數](#6-後處理及計數-05_post_processingipynb)<br>
+&emsp;[Pipeline Architecture](#pipeline-architecture)<br>
+[II.環境需求](#ii-環境需求)<br>
+[III.未來計畫](#iii-未來計畫)<br>
+[特別感謝](#特別感謝)<br>
+[關於作者](#關於作者)<br>
+
+---
 
 ### I. 流程</span><br>
 <span style="font-size: 12px;">
