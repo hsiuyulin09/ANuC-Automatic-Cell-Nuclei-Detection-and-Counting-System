@@ -131,12 +131,16 @@ pip install labelme
 ### 特別感謝</span><br>
 感謝 <a href="https://www.erixnet.com/">EriXNet</a> 對開發的協助與顧問工作<br><br>
 
+---
 
 ### 關於作者<br>
 林修渝 Hsiu-Yu, Lin</span><br>
 <span style="font-size: 12px; font-weight: bold;">
-臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br><br>
-生物化學碩士，曾任職中央研究院生醫所研究助理，現職為人工智慧生物醫學資料科學家。專長是生物化學、癌症細胞生物學、外泌體分析及生物醫學影像分析。<br>
+臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br>
+生物化學碩士，曾任職中央研究院生醫所研究助理，現職為人工智慧生物醫學資料科學家。專長是生物化學、癌症細胞生物學、外泌體分析及生物醫學影像分析。<br><br>
+Hsiu-Yu, Lin</span><br>
+A biomedical data scientist hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball—basically, anything and everything that has absolutely nothing to do with my job.<br>
+I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Biomedical Data Scientist, and specialize in biochemistry, cancer biology, and biomedical image analysis.<br><br>
 GitHub : https://github.com/hsiuyulin09
 </span>
 <br><br>
