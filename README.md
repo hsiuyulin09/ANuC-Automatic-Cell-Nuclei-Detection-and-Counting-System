@@ -4,7 +4,7 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 <p align="left">
   <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
   <br>
-  <b>本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。</b><br>
+  <b><a name="start"></a>本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。</b><br>
 </p>
 <br clear="left"/>
 
@@ -39,6 +39,7 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 ---
 
 ### **目錄** </span><br>
+[簡介](#start)<br>
 [成果展示](#成果展示)<br>
 [I. 流程](#i-流程)<br>
 &emsp;[1. 影像前處理](#step1)<br>
