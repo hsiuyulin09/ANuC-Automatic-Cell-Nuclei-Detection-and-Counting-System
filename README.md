@@ -59,12 +59,12 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 <span style="font-size: 12px;">
 請依序執行以下檔案及功能。<br><br>
 
-1. 影像前處理 (01_figure_preprocessing.ipynb)<a name="step1"></a><br>
-初次使用時先執行一次以產生所需目錄，將預定將轉為training set的訓練圖片原圖放入"preprocessing_input"資料夾，執行第二次程式將會讀取"preprocessing_input"資料夾中的圖片進行處理。輸出經數值調整、雙通道灰階及切割後圖片。<br>
+1. 影像前處理 (`01_figure_preprocessing.ipynb`)<a name="step1"></a><br>
+初次使用時先執行一次以產生所需目錄，將預定將轉為training set的訓練圖片原圖放入`preprocessing_input`資料夾，執行第二次程式將會讀取`preprocessing_input`資料夾中的圖片進行處理。輸出經數值調整、雙通道灰階及切割後圖片。<br>
     * 技術 : 使用CLAHE調整影像直方圖<br>
 使用Sliding Window切割影像，預設尺寸為256*256, overlap=30<br>
-    * 輸出 : 輸出.png至"preprocessing_output"及"preprocessing_check"資料夾。<br>
-      ("preprocessing_check"檔案為經數值調整、雙通道灰階但未切割原尺寸圖，供人工檢查)<br><br>
+    * 輸出 : 輸出`.png`至`preprocessing_output`及`preprocessing_check`資料夾。<br>
+      (`preprocessing_check`檔案為經數值調整、雙通道灰階但未切割原尺寸圖，供人工檢查)<br><br>
 
 2. Labelme 遮罩產生<a name="step2"></a><br>
 透過開源軟體做人工data label。在Labelme中指定讀取"preprocessing_output"資料夾，進行細胞範圍手動標記。<br>
