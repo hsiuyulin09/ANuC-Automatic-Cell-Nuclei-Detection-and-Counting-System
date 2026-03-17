@@ -109,12 +109,13 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 
 * 開發環境 `Python 3.13`, `PyTorch 2.10`, `Labelme 5.10`, `Jupyter Notebook 7.5`, `JupyterLab 4.5`<br>
 * 建議使用 `conda` 或 `venv` 建立虛擬環境<br>
+* 使用 AMD GPU 時以 `Python 3.12` 或以下版本建立 `torch_directml` 的相容環境<br>
 * 自行建立訓練集時需下載 `labelme` 套件<br><br>
 
 * 安裝套件
 
 ```bash
-pip install numpy pandas opencv-python scikit-image matplotlib torch torchvision h5py scipy
+pip install numpy pandas opencv-python scikit-image matplotlib torch torchvision torch-directml h5py scipy
 ```
 
 
