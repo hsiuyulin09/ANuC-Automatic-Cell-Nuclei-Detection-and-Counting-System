@@ -155,6 +155,3 @@ GitHub : https://github.com/hsiuyulin09
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="erixnet logo">
 
 </span>
-
-
-
