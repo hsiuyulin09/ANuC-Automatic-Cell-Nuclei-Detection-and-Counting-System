@@ -39,6 +39,7 @@ Automatic Cell Nuclei Detection and Counting System</span><br><br>
 ---
 
 ### **目錄** </span><br>
+[English Version ( Language Selection )](#enghish_version_title)<br><br>
 [簡介](#start)<br>
 [成果展示](#成果展示)<br>
 [I. 流程](#i-流程)<br>
@@ -155,3 +156,41 @@ GitHub : https://github.com/hsiuyulin09
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="erixnet logo">
 
 </span>
+
+
+## **Automatic Cell Nuclei Detection and Counting System** <a name="english_version_title"></span><br><br>
+
+<p align="left">
+  <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
+  <br>
+  <b><a name="start"></a>This project provides a complete end-to-end system, covering preprocessing, image analysis models, and postprocessing. It is designed for analyzing DAPI-channel fluorescence microscopy images from immunofluorescence assays (IFA). The pipeline includes image enhancement, patch-based image segmentation, a U-Net model implemented in PyTorch, and final cell localization and counting using the watershed algorithm.</b><br>
+</p>
+<br clear="left"/>
+
+### Results
+
+<div align="center">
+  <table style="border: none; border-collapse: collapse; background-color: transparent;">
+    <tr style="border: none; background-color: transparent;">
+      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
+        <img src="./pictures/20211224_origin.png" width="190" alt="Original">
+      </td>
+      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
+        <img src="./pictures/20211224_heatmap.png" width="190" alt="Heatmap">
+      </td>
+      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
+        <img src="./pictures/20211224_counter.png" width="190" alt="Contour">
+      </td>
+      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
+        <img src="./pictures/point1.png" width="190" alt="Zoom in">
+      </td>
+    </tr>
+    <tr style="border: none; background-color: transparent; font-size: 6px; font-weight: bold;">
+      <td style="border: none; background-color: transparent;">FIG.1-1 Original image</td>
+      <td style="border: none; background-color: transparent;">FIG.1-2 Heatmap</td>
+      <td style="border: none; background-color: transparent;">FIG.1-3 Contour extraction</td>
+      <td style="border: none; background-color: transparent;">FIG.1-4 Zoom in</td>
+    </tr>
+  </table>
+</div>
+<br>
