@@ -156,9 +156,9 @@ GitHub : https://github.com/hsiuyulin09
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="erixnet logo">
 
 </span>
+<br><br><br><br><br>
 
-
-## **Automatic Cell Nuclei Detection and Counting System** <a name="english_version_title"></span><br><br>
+## **Automatic Cell Nuclei Detection and Counting System** <a name="english_version_title"></a></span><br><br>
 
 <p align="left">
   <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
