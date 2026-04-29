@@ -201,13 +201,13 @@ GitHub : https://github.com/hsiuyulin09
 <span style="font-size: 12px;">
 Please follow the steps below and run the corresponding files and functions in sequence.<br><br>
 
-**1. Image Preprocessing** ( `01_figure_preprocessing.ipynb` ) <a name="e_step1"></a><br>
+1. **Image Preprocessing** ( `01_figure_preprocessing.ipynb` ) <a name="e_step1"></a><br>
 For the initial run, execute the notebook once to generate the required directories. Place the original images intended for the training set into the `preprocessing_input` folder. Running the notebook a second time will process the images in this folder. The output includes intensity-adjusted images, dual-channel grayscale images, and cropped image patches.<br>
     * **Techniques** : Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) for histogram adjustment<br>
 Use a sliding window approach for image tiling (default: `tile_size=256`, `overlap=30`)<br>
     * **Output** : Export `.png` files to the `preprocessing_output` and `preprocessing_check` folder<br>
       (Files in `preprocessing_check` are intensity-adjusted, dual-channel grayscale images that retain their original size (not cropped), intended for manual inspection)<br><br>
 
-**2. Mask Generation with Labelme** <a name="e_step2"></a><br>
+2. **Mask Generation with Labelme** <a name="e_step2"></a><br>
 Use the open-source tool Labelme to perform manual data labeling. Load images from the `preprocessing_output` folder in Labelme and manually annotate cell regions.<br>
     * **Output** : Export `.json` files to the `preprocessing_output` folder <br><br>
