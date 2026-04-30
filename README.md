@@ -211,3 +211,9 @@ Use a sliding window approach for image tiling (default: `tile_size=256`, `overl
 2. **Mask Generation with Labelme** <a name="e_step2"></a><br>
 Use the open-source tool Labelme to perform manual data labeling. Load images from the `preprocessing_output` folder in Labelme and manually annotate cell regions.<br>
     * **Output** : Export `.json` files to the `preprocessing_output` folder <br><br>
+
+3. **Label Conversion** ( `02_cell_label_mask.ipynb` )<a name="step3"></a><br>
+Read data from the `preprocessing_output` folder and convert Labelme-generated `.json` files into binary mask images.<br>
+    * **Techniques** : Apply binary masking to convert Labelme `.json` annotations into black-and-white mask images <br>
+    * **Output** : Export `.png` files to `masks_output` and `masks_check` floders<br>
+(The `masks_check` floder contains overlays of grayscale images and masks for manual inspection)<br><br>
