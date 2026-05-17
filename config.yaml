@@ -1,0 +1,22 @@
+stage1:
+  paths:
+    preprocessing_input: preprocessing_input
+    preprocessing_output: preprocessing_output
+    preprocessing_check: preprocessing_check
+
+  preprocessing:
+    tile_size: 256
+    overlap: 30
+    image_extensions:
+      - ".jpg"
+      - ".jpeg"
+      - ".tif"
+
+    clahe:
+      clip_limit: 3.0
+      tile_grid_size: [8, 8]
+
+    bilateral_filter:
+      d: 5
+      sigma_color: 75
+      sigma_space: 75
