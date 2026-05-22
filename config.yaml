@@ -12,11 +12,11 @@ stage1:
       - ".jpeg"
       - ".tif"
 
-    clahe:
+    clahe: # Contrast Limited Adaptive Histogram Equalization 限制對比度自適應直方圖均衡化
       clip_limit: 3.0
       tile_grid_size: [8, 8]
 
-    bilateral_filter:
+    bilateral_filter: # denoised
       d: 5
       sigma_color: 75
       sigma_space: 75
