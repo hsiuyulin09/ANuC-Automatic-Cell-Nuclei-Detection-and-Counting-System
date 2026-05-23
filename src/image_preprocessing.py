@@ -1,5 +1,6 @@
-import cv2
 from pathlib import Path
+import cv2
+import sys
 
 def setup_train_folders(config):
     stage1_config = config["stage1"]
@@ -33,3 +34,83 @@ def list_input_images(input_folder, image_extensions):
     ]
 
     return image_files
+
+def enhance_image(img, clahe_config, bilateral_config):
+    denoised_img = cv2.bilateralFilter(img, bilateral_config["d"], bilateral_config["sigma_color"], bilateral_config["sigma_space"])
+        # d 代表以目標像素為中心考慮的區域直徑
+        # sigmaColor 決定多大的差異會被視為邊緣
+        # sigmaSpace 影響力隨距離衰減的速度
+
+    clahe = cv2.createCLAHE(clipLimit=clahe_config["clip_limit"], tileGridSize=tuple(clahe_config["tile_grid_size"]))
+        # yaml 用 list 寫但 createCLAHE 要讀取要轉成 tuple
+        # cv2.createCLAHE 用 OpenCV 建立 CLAHE 處理器
+        # clipLimit 設定對比限制
+        # tileGridSize 指定局部區塊大小
+
+    enhanced_image = clahe.apply(denoised_img)
+
+    return enhanced_image
+
+def iter_tiles(image, tile_size, overlap): # sliding window
+    h, w = image.shape
+    stride = tile_size - overlap
+
+    for y in range(0, h - tile_size + 1, stride):
+        for x in range(0, w - tile_size + 1, stride):
+            # image[y:y+tile_size, x:x+tile_size]
+            # y 控制 row 範圍，x 控制 column 範圍
+            tile = image[y:y + tile_size, x:x + tile_size]
+            yield y, x, tile
+
+def processing_images(config):
+    stage1_config = config["stage1"]
+
+    paths = stage1_config["paths"]
+    preprocessing_input = Path(paths["preprocessing_input"])
+    preprocessing_output = Path(paths["preprocessing_output"])
+    preprocessing_check = Path(paths["preprocessing_check"])
+
+    preprocessing = stage1_config["preprocessing"]
+    tile_size = preprocessing["tile_size"]
+    overlap = preprocessing["overlap"]
+    image_extensions = preprocessing["overlap"]
+
+    clahe_config = stage1_config["clahe"]
+
+    bilateral_config = stage1_config["bilateral_filter"]
+
+    if not preprocessing_input.exists():
+        print(f"error: input directory ({preprocessing_input}) does not exist")
+        print("run `python main.py train init` first")
+        sys.exit(1)
+        return
+    
+    setup_preprocessing_output_folders(config)
+
+    image_files = list_input_images(preprocessing_input, image_extensions)
+
+    if not image_files:
+        print(f"warning: no input images found in {preprocessing_input}")
+        return
+    
+    print(f"total image: {len(image_files)}")
+
+    for image_path in image_files:
+        img = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+
+        if img is None: # cv2.imread 讀取失敗處理
+            print(f"warning: failed to read image: {image_path}")
+            continue
+
+        enhanced_image = enhance_image(img, clahe_config, bilateral_config)
+
+        cv2.imwrite(str(preprocessing_check/f"enhanced_{image_path.name}"), enhanced) # 存給 debug (check) 用的
+
+        count = 0
+
+        for y, x, tile in iter_tiles(enhanced_image, tile_size, overlap):
+            filename = f"{image_path.stem}_y{y}_x{x}.png"
+            cv2.imwrite(str(preprocessing_output/filename), tile)
+            count+=1
+
+        print(f"{image_path.name}: {count} tiles")
