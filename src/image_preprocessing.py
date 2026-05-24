@@ -66,7 +66,7 @@ def iter_tiles(image, tile_size, overlap): # sliding window
             tile = image[y:y + tile_size, x:x + tile_size]
             yield y, x, tile
 
-def processing_images(config):
+def process_images(config):
     stage1_config = config["stage1"]
 
     paths = stage1_config["paths"]

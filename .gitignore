@@ -1,6 +1,12 @@
 # project plan
 stage1_plan.md
+project_plan.md
 
 # Python cache
 __pycache__/
 *.py[cod]
+
+# project test
+preprocessing_input/
+preprocessing_output/
+preprocessing_check/
