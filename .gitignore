@@ -1,2 +1,6 @@
 # project plan
 stage1_plan.md
+
+# Python cache
+__pycache__/
+*.py[cod]

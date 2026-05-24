@@ -2,7 +2,7 @@ from pathlib import Path
 import cv2
 import sys
 
-def setup_train_folders(config):
+def setup_preprocessing_input_dir(config):
     stage1_config = config["stage1"]
     paths = stage1_config["paths"]
     folder = paths["preprocessing_input"]
@@ -13,7 +13,7 @@ def setup_train_folders(config):
 
     print(f"{folder} has been created")
 
-def setup_preprocessing_output_folders(config):
+def setup_preprocessing_output_dir(config):
     stage1_config = config["stage1"]
     paths = stage1_config["paths"]
     folders = [paths["preprocessing_output"], paths["preprocessing_check"]]
@@ -55,6 +55,10 @@ def iter_tiles(image, tile_size, overlap): # sliding window
     h, w = image.shape
     stride = tile_size - overlap
 
+    if overlap >= tile_size:
+        print(f"error: overlap size cannot equal or larger than tile size")
+        sys.exit(1)
+
     for y in range(0, h - tile_size + 1, stride):
         for x in range(0, w - tile_size + 1, stride):
             # image[y:y+tile_size, x:x+tile_size]
@@ -73,19 +77,18 @@ def processing_images(config):
     preprocessing = stage1_config["preprocessing"]
     tile_size = preprocessing["tile_size"]
     overlap = preprocessing["overlap"]
-    image_extensions = preprocessing["overlap"]
+    image_extensions = preprocessing["image_extensions"]
 
-    clahe_config = stage1_config["clahe"]
+    clahe_config = preprocessing["clahe"]
 
-    bilateral_config = stage1_config["bilateral_filter"]
+    bilateral_config = preprocessing["bilateral_filter"]
 
     if not preprocessing_input.exists():
         print(f"error: input directory ({preprocessing_input}) does not exist")
         print("run `python main.py train init` first")
         sys.exit(1)
-        return
     
-    setup_preprocessing_output_folders(config)
+    setup_preprocessing_output_dir(config)
 
     image_files = list_input_images(preprocessing_input, image_extensions)
 
@@ -104,13 +107,14 @@ def processing_images(config):
 
         enhanced_image = enhance_image(img, clahe_config, bilateral_config)
 
-        cv2.imwrite(str(preprocessing_check/f"enhanced_{image_path.name}"), enhanced) # 存給 debug (check) 用的
+        cv2.imwrite(str(preprocessing_check/f"enhanced_{image_path.name}"), enhanced_image) # 存給 debug (check) 用的
 
         count = 0
 
         for y, x, tile in iter_tiles(enhanced_image, tile_size, overlap):
             filename = f"{image_path.stem}_y{y}_x{x}.png"
-            cv2.imwrite(str(preprocessing_output/filename), tile)
+            if not cv2.imwrite(str(preprocessing_output / filename), tile):
+                print(f"warning: failed to write tile: {filename}")
             count+=1
 
         print(f"{image_path.name}: {count} tiles")
