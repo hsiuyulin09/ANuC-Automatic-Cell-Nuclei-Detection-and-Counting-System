@@ -72,3 +72,11 @@ def load_command_config(args): # 讀取 CLI 對應 config(.yaml)
     
     if args.command == "anuc" and args.aunc_commands == "init":
         return load_config(DEFAULT_PREDICTION_CONFIG)
+    
+def load_anuc_predict_config(args):
+    load_predict_config = args.config or DEFAULT_PREDICTION_CONFIG # 這裡的 or 會優先讀取左邊的參數
+
+    predict_config = load_config(load_predict_config)
+    postprocessing_config = load_config(DEFAULT_POSTPROCESSING_CONFIG)
+
+    return predict_config, postprocessing_config

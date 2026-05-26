@@ -1,22 +1,21 @@
-stage1:
-  paths:
-    preprocessing_input: preprocessing_input
-    preprocessing_output: preprocessing_output
-    preprocessing_debug: preprocessing_debug
+paths:
+  preprocessing_input: preprocessing_input
+  preprocessing_output: preprocessing_output
+  preprocessing_check: preprocessing_check
 
-  preprocessing:
-    tile_size: 256
-    overlap: 30
-    image_extensions:
-      - ".jpg"
-      - ".jpeg"
-      - ".tif"
+preprocessing:
+  tile_size: 256
+  overlap: 30
+  image_extensions:
+    - ".jpg"
+    - ".jpeg"
+    - ".tif"
 
-    clahe: # Contrast Limited Adaptive Histogram Equalization 限制對比度自適應直方圖均衡化
-      clip_limit: 3.0
-      tile_grid_size: [8, 8]
+  clahe: # Contrast Limited Adaptive Histogram Equalization 限制對比度自適應直方圖均衡化
+    clip_limit: 3.0
+    tile_grid_size: [8, 8]
 
-    bilateral_filter: # denoised
-      d: 5
-      sigma_color: 75
-      sigma_space: 75
+  bilateral_filter: # denoised
+    d: 5
+    sigma_color: 75
+    sigma_space: 75

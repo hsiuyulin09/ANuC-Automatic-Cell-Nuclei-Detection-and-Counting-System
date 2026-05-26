@@ -3,8 +3,7 @@ import cv2
 import sys
 
 def setup_preprocessing_input_dir(config):
-    stage1_config = config["stage1"]
-    paths = stage1_config["paths"]
+    paths = config["paths"]
     folder = paths["preprocessing_input"]
 
     Path(folder).mkdir(parents=True, exist_ok=True)
@@ -14,8 +13,7 @@ def setup_preprocessing_input_dir(config):
     print(f"{folder} has been created")
 
 def setup_preprocessing_output_dir(config):
-    stage1_config = config["stage1"]
-    paths = stage1_config["paths"]
+    paths = config["paths"]
     folders = [paths["preprocessing_output"], paths["preprocessing_check"]]
 
     for folder in folders:
@@ -67,14 +65,12 @@ def iter_tiles(image, tile_size, overlap): # sliding window
             yield y, x, tile
 
 def process_images(config):
-    stage1_config = config["stage1"]
-
-    paths = stage1_config["paths"]
+    paths = config["paths"]
     preprocessing_input = Path(paths["preprocessing_input"])
     preprocessing_output = Path(paths["preprocessing_output"])
-    preprocessing_debug = Path(paths["preprocessing_debug"])
+    preprocessing_check = Path(paths["preprocessing_check"])
 
-    preprocessing = stage1_config["preprocessing"]
+    preprocessing = config["preprocessing"]
     tile_size = preprocessing["tile_size"]
     overlap = preprocessing["overlap"]
     image_extensions = preprocessing["image_extensions"]
@@ -107,7 +103,7 @@ def process_images(config):
 
         enhanced_image = enhance_image(img, clahe_config, bilateral_config)
 
-        cv2.imwrite(str(preprocessing_debug/f"enhanced_{image_path.name}"), enhanced_image) # 存給 debug (check) 用的
+        cv2.imwrite(str(preprocessing_check/f"enhanced_{image_path.name}"), enhanced_image) # 存給 debug (check) 用的
 
         count = 0
 
