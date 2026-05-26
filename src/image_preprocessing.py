@@ -72,7 +72,7 @@ def process_images(config):
     paths = stage1_config["paths"]
     preprocessing_input = Path(paths["preprocessing_input"])
     preprocessing_output = Path(paths["preprocessing_output"])
-    preprocessing_check = Path(paths["preprocessing_check"])
+    preprocessing_debug = Path(paths["preprocessing_debug"])
 
     preprocessing = stage1_config["preprocessing"]
     tile_size = preprocessing["tile_size"]
@@ -107,7 +107,7 @@ def process_images(config):
 
         enhanced_image = enhance_image(img, clahe_config, bilateral_config)
 
-        cv2.imwrite(str(preprocessing_check/f"enhanced_{image_path.name}"), enhanced_image) # 存給 debug (check) 用的
+        cv2.imwrite(str(preprocessing_debug/f"enhanced_{image_path.name}"), enhanced_image) # 存給 debug (check) 用的
 
         count = 0
 

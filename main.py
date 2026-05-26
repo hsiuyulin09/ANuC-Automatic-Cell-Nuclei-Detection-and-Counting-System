@@ -6,6 +6,9 @@ from src.image_preprocessing import process_images, setup_preprocessing_input_di
 
 # config 預設路徑
 DEFAULT_PREPROCESSING_CONFIG = "configs/preprocessing_config.yaml"
+DEFAULT_TRAINING_CONFIG = "configs/training_config.yaml"
+DEFAULT_PREDICTION_CONFIG = "configs/prediction_config.yaml"
+DEFAULT_POSTPROCESSING_CONFIG = "configs/postprocessing_config.yaml"
 
 def parse_args(): 
         # 解析 CLI 參數
@@ -30,3 +33,42 @@ def parse_args():
 
     subparser.add_parser("init", help="create user-input folders required before preprocessing")
     subparser.add_parser("preprocessing", help="run image preprocessing and generate tiles for Labelme")
+    subparser.add_parser("mask", help="convert Labelme JSON annotations to binary masks")
+    subparser.add_parser("package", help="create H5 dataset from image tiles and masks")
+
+    train_parser = subparser.add_parser("train", help="training command")
+    train_subparser = train_parser.add_subparsers(dest="training_command", required=True)
+    train_subparser.add_parser("run", help="train model from prepared H5 dataset")
+
+
+    anuc_parser = subparser.add_parser("anuc", help="ANuC prediction commands")
+    anuc_subparser = anuc_parser.add_subparsers(dest="aunc_commands", required=True)
+    anuc_subparser.add_parser("init", help="prepare environment for ANuC prediction")
+    anuc_subparser.add_parser("predict", help="run model prediction and postprocessing to get final result")
+
+    args = parser.parse_args()
+
+    return args
+
+def load_command_config(args): # 讀取 CLI 對應 config(.yaml)
+    
+    if args.config is not None:
+        return load_config(args.config)
+    
+    if args.command == "init":
+        return load_config(DEFAULT_PREPROCESSING_CONFIG)
+    
+    if args.command == "preprocessing":
+        return load_config(DEFAULT_PREPROCESSING_CONFIG)
+    
+    if args.command == "mask":
+        return load_config(DEFAULT_TRAINING_CONFIG)
+    
+    if args.command == "package":
+        return load_config(DEFAULT_TRAINING_CONFIG)
+    
+    if args.command == "train" and args.train_command == "run":
+        return load_config(DEFAULT_TRAINING_CONFIG)
+    
+    if args.command == "anuc" and args.aunc_commands == "init":
+        return load_config(DEFAULT_PREDICTION_CONFIG)

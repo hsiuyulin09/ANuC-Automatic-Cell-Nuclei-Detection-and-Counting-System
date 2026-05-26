@@ -2,7 +2,7 @@ stage1:
   paths:
     preprocessing_input: preprocessing_input
     preprocessing_output: preprocessing_output
-    preprocessing_check: preprocessing_check
+    preprocessing_debug: preprocessing_debug
 
   preprocessing:
     tile_size: 256
