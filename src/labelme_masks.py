@@ -58,3 +58,47 @@ def convert_labelme_json_to_masks(config):
         return
     
     print(f"total labelme files: {len(json_files)}")
+
+    if preview_sample_rate > 0 :
+        sample_count = max(1, (len(json_files)*preview_sample_rate))
+        sample_count = min(sample_count, len(json_files))
+
+        preview_targets = random.Random(preview_seed).sample(json_files, sample_count)
+
+    else:
+        preview_targets=[]
+# .load()以()中的方式讀取並解析檔案
+                # data會是labelme產生的dictionary, 格式如下
+                # {
+                # "version": "5.0.1",
+                # "flags": {},
+                # "shapes": [{ /* 標註 1 */ }, { /* 標註 2 */ }...],
+                #       { /* 標註 */ } = { #"label": "cell",
+                #                          #"points": [ [x1, y1], [x2, y2] ],
+                #                          #"group_id": null,
+                #                          #"shape_type": "polygon",
+                #                          #"flags": {} }
+                # "imagePath": "cell_01.jpg",
+                # "imageData": null,
+                # "imageHeight": 1024,
+                # "imageWidth": 1280
+                # }
+    for json_path in json_files:
+        try:
+            with json_path.open("r", encoding = "utf-8") as f:
+                data = json.load(f)
+                h, w = data["imageHeight"], data["imageWidth"]
+                base_name = json_path.stem # .stem主檔名, .suffix副檔名, .name全檔名
+                mask = np.zeros(h, w)
+
+                for shape in data["shapes"]:
+                    if "label" == target_label:
+                        points = np.array(shape["points"], dtype=np.int32)
+                            # np.array(data來源, 規格) int32 將 labelme 產生的 float 座標轉為圖片座標, 同時整數化
+                        cv2.fillPoly(mask, [points], color=255)
+                            # cv2.fillPoly用於填充多邊形 # cv2.fillPoly(畫布, 頂點座標(包含 np array 的 list), 顏色)
+                
+                mask_path = output_folder/f"{base_name}_mask.png"
+                cv2.imwrite(str(mask_path), mask)
+
+                print(f"{base_name}_mask.png")
