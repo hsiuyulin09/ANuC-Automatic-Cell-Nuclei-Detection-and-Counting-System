@@ -67,22 +67,7 @@ def convert_labelme_json_to_masks(config):
 
     else:
         preview_targets=[]
-# .load()以()中的方式讀取並解析檔案
-                # data會是labelme產生的dictionary, 格式如下
-                # {
-                # "version": "5.0.1",
-                # "flags": {},
-                # "shapes": [{ /* 標註 1 */ }, { /* 標註 2 */ }...],
-                #       { /* 標註 */ } = { #"label": "cell",
-                #                          #"points": [ [x1, y1], [x2, y2] ],
-                #                          #"group_id": null,
-                #                          #"shape_type": "polygon",
-                #                          #"flags": {} }
-                # "imagePath": "cell_01.jpg",
-                # "imageData": null,
-                # "imageHeight": 1024,
-                # "imageWidth": 1280
-                # }
+
     for json_path in json_files:
         try:
             with json_path.open("r", encoding = "utf-8") as f:
@@ -102,3 +87,26 @@ def convert_labelme_json_to_masks(config):
                 cv2.imwrite(str(mask_path), mask)
 
                 print(f"{base_name}_mask.png")
+
+                if json_files in preview_targets:
+                    image_path = input_folder/Path(data["imagePath"]).name # 取得原 tile 圖的路徑
+
+                    if image_path.exists():
+                        img = cv2.imread(str(image_path))
+
+                        if img is not None:
+                            overlay = img.copy()
+                            overlay[mask == 225] = [0, 0, 255] # 在 overlay 上把 mask 為 255 的對應座標轉成紅色 (0, 0, 255) = (b, g, r)
+
+                            combined = cv2.addWeighted(img, 0.95, overlay, 0.05, 0.5)
+                                # cv2.addWeighted(img1, alpha, img2, beta, gamma)
+                                # 公式 new_img = img1 * alpha + img2 * beta + gamma
+                                # alpha, beta 權重, 代表在圖上的透明度占比 (alpha + beta = 1)
+                                # gamma 合成圖亮度設定, gamma = 0 即亮度不變 (combine 時兩圖亮度會相加)
+                            preview_path = preview_folder/f"check_{base_name}"
+                            cv2.imwrite(str(preview_path), combined)
+
+        except Exception as error:
+            print(f"{json_path.name} error: {error}")
+
+    print(f"converted {len(json_files)} files successfully")
