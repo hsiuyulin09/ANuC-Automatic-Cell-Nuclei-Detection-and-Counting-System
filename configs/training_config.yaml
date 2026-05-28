@@ -8,12 +8,12 @@ paths:
 masks:
   target_label: cell
   preview_sample_rate: 0.2
-  preview_seed: 77 # 如果沒有輸入 seed 可以直接取消使用 random seed?
+  preview_seed: 77 # AK77
 
 dataset:
   sample_rate_empty: 0.2
   seed: 77
-  split: [0.8, 0.1, 0.1]
+  split: [0.9, 0.1]
 
 training:
   batch_size: 16
