@@ -29,7 +29,7 @@ class DiceLoss(nn.Module):
 
 class BCEDiceLoss(nn.Module):
     def  __init__(self, bce_weight=0.5):
-        super(BCEDiceLoss, self).__init__
+        super(BCEDiceLoss, self).__init__()
         self.bce = nn.BCEWithLogitsLoss()
         self.dice = DiceLoss()
         self.bce_weight = bce_weight

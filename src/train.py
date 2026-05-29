@@ -50,3 +50,74 @@ def train_model(config):
     torch.manual_seed(seed)  # 固定weight initiation的random
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
+
+    device = set_device()
+    print(f"using device. {device}")
+
+    train_dataset = H5Dataset(h5_path=h5_path, mode="train", augment=True, seed=seed)
+    val_dataset = H5Dataset(h5_path=h5_path, mode="val", augment=False, seed=seed)
+
+    train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False)
+
+    model = UNet().to(device)
+    loss_function = BCEDiceLoss()
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate) # Adam 依權重過去更新狀況用一個參數微調當次 learning rate
+
+    loss_history = []
+
+    for epoch in range(epochs):
+        train_loader.dataset.set_epoch(epoch) # train_loader.dataset指向H5Dataset #呼叫set_epoch(epoch)
+
+        model.train()
+        train_loss = 0.0
+        for img, mask in train_loader:
+            img, mask = img.to(device), mask.to(device)
+            optimizer.zero_grad()
+            output = model(img)
+            loss = loss_function(output, mask)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item()
+
+        model.eval()
+        val_loss = 0.0
+        correct_pixels = 0
+        total_pixels = 0
+        with torch.no_grad():
+            for img, mask in val_loader:
+                img, mask = img.to(device), mask.to(device)
+                output = model(img)
+                loss = loss_function(output, mask)
+                val_loss += loss.item()
+
+                prediction = torch.sigmoid(output) >= threshold
+                correct_pixels += (prediction == mask).sum().item()
+                total_pixels += torch.numel(prediction) # .numel() number of element
+
+        avg_train_loss = train_loss / len(train_loader)
+        avg_val_loss = val_loss / len(val_loader)
+        avg_val_acc = correct_pixels / total_pixels
+        loss_history.append(avg_train_loss)
+
+        if (epoch + 1) % 1 == 0 or epoch == 0:
+            print(f"Loss after iteration {epoch + 1}: {avg_train_loss}")
+
+    print("Final statistics")
+    print(f"Final training loss: {avg_train_loss}")
+    print(f"Final validation loss: {avg_val_loss}")
+    print(f"Final validation accuracy: {avg_val_acc * 100} %")
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(loss_history) + 1), loss_history, label="Training Loss", color="#1f42b4", linewidth=2, marker="o", markersize=4)
+    plt.title("Learning Curve", fontsize=14)
+    plt.xlabel("Epochs", fontsize=12)
+    plt.ylabel("Loss Value", fontsize=12)
+    plt.grid(True, linestyle="--", alpha=0.7)
+
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+    torch.save(model.state_dict(), str(model_output))
+    print(f"model weight saved at {model_output}")
