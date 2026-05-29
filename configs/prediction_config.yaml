@@ -1,0 +1,13 @@
+paths:
+  prediction_input: prediction_input
+  prediction_results: prediction_results
+  model_path: unet_cellcount_model.pth
+
+prediction:
+  tile_size: 256
+  overlap: 60
+  image_extensions:
+    - ".jpg"
+    - ".jpeg"
+    - ".tif"
+    - ".png"

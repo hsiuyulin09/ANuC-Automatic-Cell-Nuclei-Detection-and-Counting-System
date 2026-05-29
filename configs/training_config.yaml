@@ -12,7 +12,7 @@ masks:
 
 dataset:
   sample_rate_empty: 0.2
-  seed: 77
+  seed: 77 # UL AK 77 
   split: [0.9, 0.1]
 
 training:

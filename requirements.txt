@@ -3,3 +3,5 @@ opencv-python>=4.9
 numpy>=1.26
 h5py>=3.10
 PyYAML>=6.0
+torch
+torch-directml
