@@ -101,7 +101,7 @@ class UNet(nn.Module):
         self.pool = nn.MaxPool2d(kernel_size=2)
         self.enc2 = conv_block(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1)
 
-        # decoder
+        # decoder # upsampling
         self.up = nn.ConvTranspose2d(in_channels=128, out_channels=64, kernel_size=2, stride=2)  # image size = (128*128) >>> (256, 256)
 
         self.dec = conv_block(in_channels=128, out_channels=64, kernel_size=3, stride=1, padding=1)  # combine feature channels = enc1(64)+up(64)
@@ -109,15 +109,39 @@ class UNet(nn.Module):
         self.final = nn.Conv2d(in_channels=64, out_channels=out_channels, kernel_size=1)
 
     def forward(self, x):
-        enc1 = self.enc1(x)
-        pool = self.pool(enc1)
-        enc2 = self.enc2(pool)
+            # input shape = (b, c, h, w) = (batch, 1, 256, 256)
+        enc1 = self.enc1(x) # (b, 64, 256, 256)
+        pool = self.pool(enc1) # (b, 64, 128, 128)
+        enc2 = self.enc2(pool) # (b, 128, 128, 128)
 
-        up = self.up(enc2)
+        up = self.up(enc2) # (b, 64, 256, 256)
 
-        tiger = torch.cat([up, enc1], dim=1)  # (Batch, Channel, Height, Width) so dim=1 代表合併的是C
-        dec = self.dec(tiger)
+        tiger = torch.cat([up, enc1], dim=1) # (b, 128, 256, 256)
+            # (Batch, Channel, Height, Width) so dim=1 代表合併的是C
+        dec = self.dec(tiger) # (b, 64, 256, 256)
 
-        forward = self.final(dec)
-        
+        forward = self.final(dec) # (b, out_channels, 256, 256)
+
         return forward
+    
+    
+def set_device():
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+
+    elif torch_directml.is_available():
+        device = torch_directml.device()
+
+    else:
+        device = torch.device("cpu")
+
+    return device
+
+
+def generate_weight_mask(tile_size):
+    mask = np.ones((tile_size, tile_size), dtype=np.float32)  # np.ones((h ,w), data type)
+    mask = cv2.copyMakeBorder(mask[1:-1, 1:-1], 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=0)  # cv2.copyMakeBorder(target, up, down, left, right, mode, add data)
+    mask = cv2.distanceTransform(mask.astype(np.uint8), cv2.DIST_L2, 5)  # cv2.distanceTransform(target, mode, mask size) #target輸入須為uint8
+    mask = mask / mask.max()
+
+    return mask
