@@ -5,3 +5,4 @@ h5py>=3.10
 PyYAML>=6.0
 torch
 torch-directml
+matplotlib
