@@ -1,0 +1,9 @@
+paths:
+  prediction_results: prediction_results
+  final_result: final_result
+
+postprocessing:
+  min_distance: 90
+  cell_prob_threshold: 0.3
+  min_cell_size: 6400
+  buffer: 3

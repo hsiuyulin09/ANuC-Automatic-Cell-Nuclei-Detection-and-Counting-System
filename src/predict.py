@@ -17,7 +17,7 @@ def setup_prediction_output_dir(config):
 
     prediction_input.mkdir(parents=True, exist_ok=True)
     
-    print(f"initialization successful. please place images in: {prediction_input}")
+    print(f"prediction mode initialization successful. please place images in: {prediction_input}")
 
 def prediction_model(config):
     paths = config["paths"]
@@ -100,22 +100,24 @@ def prediction_model(config):
 
             for y in range(0, new_h - tile_size + 1, stride):
                 for x in range(0, new_w - tile_size + 1, stride):
-                    tile = padded_img[y:y + tile_size, x:x + tile_size]
+                    tile = padded_img[y:y + tile_size, x:x + tile_size] # numpy slicing
 
                     tile_t = torch.from_numpy(tile).detach().float().unsqueeze(0).unsqueeze(0).to(device) / 255.0
-                    # torch.from_numpy()自numpy轉pytorch tensor #(Batch, Channel, Height, Width) = (1, 1, 256, 256)
+                        # torch.from_numpy() 轉 numpy 成 pytorch tensor 
+                        # .detach() 切除計算圖維持 tensor # .item() 只能處理單一值切除計算圖, 從 tensor 轉成數字
+                        # (Batch, C, H, W) = (1, 1, 256, 256)
 
                     with torch.no_grad():
                         output = model(tile_t)
-                        prob = torch.sigmoid(output).cpu().squeeze().numpy()
+                        prob = torch.sigmoid(output).cpu().squeeze().numpy() # (1, 1, 256, 256) squeeze() -> (256, 256)
 
                     prob_map[y:y + tile_size, x:x + tile_size] += prob * weight_mask
                     count_map[y:y + tile_size, x:x + tile_size] += weight_mask
 
             final_prob = np.divide(prob_map, count_map, where=count_map != 0, out=np.zeros_like(prob_map))
-            final_prob = final_prob[:h, :w]  # [:h, :w]slice from 0 to h and w (delete padding)
+            final_prob = final_prob[:h, :w]  # [:h, :w]slice from 0 to h and w delete padding
 
-            group = h5f.create_group(img_path.name)
+            group = f.create_group(img_path.name)
             group.create_dataset("raw_image", data=raw_img)
             group.create_dataset("probability_map", data=final_prob)
             group.attrs["original_size"] = (h, w)  # 標記數據成分標籤
