@@ -57,6 +57,14 @@ def train_model(config):
     train_dataset = H5Dataset(h5_path=h5_path, mode="train", augment=True, seed=seed)
     val_dataset = H5Dataset(h5_path=h5_path, mode="val", augment=False, seed=seed)
 
+    if len(train_dataset) == 0:
+        print("training dataset is empty")
+        return
+
+    if len(val_dataset) == 0:
+        print("validation dataset is empty")
+        return
+
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False)
 

@@ -75,6 +75,7 @@ def create_h5_dataset(config):
 
     total = len(total_samples)
     train_end = int(total * split[0])
+    train_end = max(1, min(train_end, total - 1))
 
     datasets = {
         "train": total_samples[:train_end], 

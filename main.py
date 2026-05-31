@@ -50,7 +50,7 @@ def parse_args():
 
 
     anuc_parser = subparser.add_parser("anuc", help="ANuC prediction commands")
-    anuc_subparser = anuc_parser.add_subparsers(dest="aunc_commands", required=True)
+    anuc_subparser = anuc_parser.add_subparsers(dest="anuc_commands", required=True)
     anuc_subparser.add_parser("init", help="prepare environment for ANuC prediction")
     anuc_subparser.add_parser("predict", help="run model prediction and postprocessing to get final result")
 

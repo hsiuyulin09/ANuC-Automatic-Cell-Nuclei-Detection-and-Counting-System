@@ -52,13 +52,14 @@ def prediction_model(config):
 
     device = set_device()
     model = UNet().to(device)
+    model.eval()
     model.load_state_dict(torch.load(str(model_path), map_location=device))
         # torch.load() 讀取 .pth, 把內容讀成 PyTorch 物件類似 dict
         # model.load_state_dict() 套入 model
 
     image_files = [
         img_path for img_path in sorted(input_path.iterdir())
-        if img_path.is_file() and img_path.suffix().low() in image_extensions
+        if img_path.is_file() and img_path.suffix().lower() in image_extensions
     ]
         # .iterdir() 列出這個資料夾底下第一層的所有項目
         # .is_file() 檢查這個路徑是不是檔案, 回傳 boolean
@@ -69,9 +70,23 @@ def prediction_model(config):
     
     print(f"total image: {len(image_files)}")
 
+    if tile_size <= 0:
+        print("tile_size must be greater than 0")
+        return
+
+    if overlap < 0:
+        print("overlap cannot be negative")
+        return
+
+    if overlap >= tile_size:
+        print("overlap must be smaller than tile_size")
+        return
+
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
     stride = tile_size - overlap
     weight_mask = generate_weight_mask(tile_size)
+
+    output_path.mkdir(parents=True, exist_ok=True)
 
     with h5py.File(output_h5, "w") as f:
         for img_path in image_files:
