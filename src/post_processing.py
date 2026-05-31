@@ -17,7 +17,7 @@ def setup_folders(config):
     paths = config["paths"]
     final_result = Path(paths["final_result"])
 
-    final_result.mldir(parents=True, exist_ok=True)
+    final_result.mkdir(parents=True, exist_ok=True)
     print("post processing setup successful")
 
 def post_processing(h5_path, output_folder, cell_prob_threshold, sigma, min_distance, min_cell_size, buffer):
@@ -36,33 +36,33 @@ def post_processing(h5_path, output_folder, cell_prob_threshold, sigma, min_dist
     report_lines =[]
 
     with h5py.File(h5_path, "r") as f:
-        for img_name in f.key(): # f.keys()釣出f裡所有group名組成list
+        for img_name in f.keys(): # f.keys()釣出f裡所有group名組成list
             print(f"processing image. {img_name}")
 
-            group = f["img_name"]
-            raw_image = group["raw_name"][:]
+            group = f[img_name]
+            raw_image = group["raw_image"][:]
             prob_map = group["probability_map"][:]
             h, w = prob_map.shape # raw_img.shape = (H, W, 3), prob_map.shape = (H, W)
 
             thresh = prob_map >= cell_prob_threshold
 
-            distence = ndi.distance_transform_edt(thresh)
+            distance = ndi.distance_transform_edt(thresh)
                 # Euclidean Distance Transform, EDT
                 # 算每一個True與最近的False的EDT距離, 存成matrix
-            dist_smoothed = gaussian_filter(distence, sigma=sigma)
+            dist_smoothed = gaussian_filter(distance, sigma=sigma)
             coords = peak_local_max(dist_smoothed, min_distance=min_distance, labels=thresh)
                 # peak_local_max(目標矩陣, 最短距離threshold, 區域限制)
 
-            mask = np.zeros(distence.shape, dtype=bool)
+            mask = np.zeros(distance.shape, dtype=bool)
             mask[tuple(coords.T)] = True # 將細胞中心座標標成 boolean matrix
             markers, _ = ndi.label(mask) # 依順序編號, 標成 watershed seed
-            labels = watershed(-distence, markers, mask=thresh)
+            labels = watershed(-distance, markers, mask=thresh)
 
             for label_id in np.unique(labels):
                 if label_id == 0:
                     continue
 
-                cell_area = np.array(labels == label_id)
+                cell_area = np.sum(labels == label_id)
 
                 if cell_area < min_cell_size:
                     labels[labels == label_id] = 0
@@ -95,6 +95,9 @@ def post_processing(h5_path, output_folder, cell_prob_threshold, sigma, min_dist
                     contours, _ = cv2.findContours(cell_mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
                         # contours, hierarchy = cv2.findContours(目標矩陣, 模式, 儲存方式)
                         # contours 輪廓座標, hierarchy 輪廓內外關係
+                    cv2.drawContours(overlay_img, contours, -1, color, 2)
+                        # cv2.drawContours(畫布, 座標, 指定繪製目標contourIdx, 顏色, 線條寬度) 繪製輪廓
+                        # contourIdx=-1 參數-1表示繪製全部
 
             thresh = labels > 0
             lower_bound = cell_prob_threshold
@@ -110,12 +113,12 @@ def post_processing(h5_path, output_folder, cell_prob_threshold, sigma, min_dist
 
             mask_3ch = np.repeat(thresh[:, :, None], 3, axis=2)
                 # np.repeat(目標矩陣, 重複次數, 目標維度) 複製維度 #目標維度數字*重複次數=結果, ex.np.repeat((1, 2), 3, axis=1) >>> shape = (1, 6)
-            heatmap_overlay = np.where(mask_3ch, heatmap, raw_img)  # input shape = (H, W, 3) #np.where(boolean矩陣, true時填入, false時填入)
+            heatmap_overlay = np.where(mask_3ch, heatmap, raw_image)  # input shape = (H, W, 3) #np.where(boolean矩陣, true時填入, false時填入)
 
             img_stem = Path(img_name).stem
             cv2.imwrite(str(output_path / f"{img_stem}_counter.png"), overlay_img)
             cv2.imwrite(str(output_path / f"{img_stem}_heatmap.png"), heatmap_overlay)
-            cv2.imwrite(str(output_path / f"{img_stem}_origin.png"), raw_img)
+            cv2.imwrite(str(output_path / f"{img_stem}_origin.png"), raw_image)
 
             total = complete_count + incomplete_count # 暫時保留
             report_lines.append(f"{img_name}: total {complete_count} cells")
@@ -127,7 +130,7 @@ def post_processing(h5_path, output_folder, cell_prob_threshold, sigma, min_dist
 
     print(f"post-processing complete: {output_path}")
 
-def batch_processing(config):
+def batch_post_process(config):
     paths = config["paths"]
     postprocessing_config = config.get("postprocessing") or {}
 
@@ -160,9 +163,9 @@ def batch_processing(config):
         print("prediction result folder not exist")
         return
     
-    h5_files = sorted(h5_path.glod("*.h5"))
+    h5_files = sorted(h5_path.glob("*.h5"))
     
-    if not h5_files.exists():
+    if not h5_files:
         print("prediction result not exist")
         return
 
