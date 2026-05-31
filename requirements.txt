@@ -6,3 +6,5 @@ PyYAML>=6.0
 torch
 torch-directml
 matplotlib
+scipy
+scikit-image

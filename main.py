@@ -10,6 +10,14 @@ DEFAULT_TRAINING_CONFIG = "configs/training_config.yaml"
 DEFAULT_PREDICTION_CONFIG = "configs/prediction_config.yaml"
 DEFAULT_POSTPROCESSING_CONFIG = "configs/postprocessing_config.yaml"
 
+# python main.py init
+# python main.py preprocessing
+# python main.py mask
+# python main.py package
+# python main.py train run
+# python main.py anuc init
+# python main.py anuc predict
+
 def parse_args(): 
         # 解析 CLI 參數
         # 接收使用者輸入的 command
@@ -67,16 +75,107 @@ def load_command_config(args): # 讀取 CLI 對應 config(.yaml)
     if args.command == "package":
         return load_config(DEFAULT_TRAINING_CONFIG)
     
-    if args.command == "train" and args.train_command == "run":
+    if args.command == "train" and args.training_command == "run":
         return load_config(DEFAULT_TRAINING_CONFIG)
     
     if args.command == "anuc" and args.aunc_commands == "init":
         return load_config(DEFAULT_PREDICTION_CONFIG)
     
-def load_anuc_predict_config(args):
+    raise ValueError(f"unsupported command for config loading. {args.command}") # user 指令無法識別則跳脫
+    
+def load_anuc_predict_config(args): # anuc predict
     load_predict_config = args.config or DEFAULT_PREDICTION_CONFIG # 這裡的 or 會優先讀取左邊的參數
 
     predict_config = load_config(load_predict_config)
     postprocessing_config = load_config(DEFAULT_POSTPROCESSING_CONFIG)
 
     return predict_config, postprocessing_config
+
+
+def run_init(args):
+    config = load_command_config(args)
+    setup_preprocessing_input_dir(config)
+
+def run_processing(args):
+    config = load_command_config(args)
+    process_images(config)
+
+def run_mask(args):
+    from src.labelme_masks import convert_labelme_json_to_masks
+
+    config = load_command_config(args)
+    convert_labelme_json_to_masks(config)
+
+def run_package(args):
+    from src.dataset_h5 import create_h5_dataset
+
+    config = load_command_config(args)
+    create_h5_dataset(config)
+
+def run_train(args):
+    from src.train import train_model
+
+    config = load_command_config(args)
+    train_model(config)
+
+def run_anuc_init(args):
+    from src.predict import setup_prediction_output_dir
+
+    config = load_command_config(args)
+    setup_prediction_output_dir(config)
+
+def run_anuc_predict(args):
+    from src.orchestrator import run_prediction_pipeline
+
+    predict_config, postprocessing_config = load_anuc_predict_config(args)
+    run_prediction_pipeline(predict_config, postprocessing_config)
+
+
+def dispatch(args):
+    if args.command == "init":
+        run_init(args)
+        return
+    
+    if args.command == "preprocessing":
+        run_processing(args)
+        return
+    
+    if args.command == "mask":
+        run_mask(args)
+        return
+    
+    if args.command == "package":
+        run_package(args)
+        return
+    
+    if args.command == "train" and args.training_command == "run":
+        run_train(args)
+        return
+    
+    if args.command == "anuc" and args.aunc_commands == "init":
+        run_anuc_init(args)
+        return
+    
+    if args.command == "anuc" and args.anuc_commands == "predict":
+        run_anuc_predict(args)
+        return
+    
+    raise ValueError(f"unsupported command. {args}")
+
+def main():
+    args = parse_args()
+
+    try:
+        dispatch(args)
+    except FileNotFoundError as error: # 檔案或路徑不存在
+        print(f"error: {error}")
+        sys.exit(1)
+    except KeyError as error: # config YAML 結構不完整
+        print(f"missing config key: {error}")
+        sys.exit(1)
+    except ValueError as error: # 參數值不合理
+        print(f"error: {error}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
