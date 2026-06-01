@@ -1,148 +1,228 @@
-## **ANuC 自動化免疫螢光染色細胞核偵測及計數系統**
-Automatic Cell Nuclei Detection and Counting System</span><br><br>
+# 自動化免疫螢光染色細胞核偵測及計數系統
+ Automatic Cell Nuclei Detection and Counting System
 
-<p align="left">
-  <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
-  <br>
-  <b><a name="start"></a>本專案提供自前處理、影像分析模型至後處理...等功能完整之整套系統。用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 當中的 DAPI 通道螢光顯微照片。透過影像調整、原始圖切割、UNet 模型 (PyTorch)，至最終利用分水嶺算法進行細胞位置標記及計數。</b><br>
-</p>
-<br clear="left"/>
+## 簡介
 
-### 成果展示
+本專案提供自影像前處理、人工標註轉換、模型訓練、模型預測至後處理計數之完整流程。主要用於分析免疫螢光分析 (Immunofluorescence assay, IFA) 中的 DAPI channel 螢光顯微影像。透過 CLAHE 影像增強、Sliding Window 影像切割、UNet model 與 Watershed algorithm，完成細胞核區域偵測、分割、視覺化與計數輸出。
 
-<div align="center">
-  <table style="border: none; border-collapse: collapse; background-color: transparent;">
-    <tr style="border: none; background-color: transparent;">
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_origin.png" width="190" alt="Original">
-      </td>
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_heatmap.png" width="190" alt="Heatmap">
-      </td>
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_counter.png" width="190" alt="Contour">
-      </td>
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/point1.png" width="190" alt="Zoom in">
-      </td>
-    </tr>
-    <tr style="border: none; background-color: transparent; font-size: 6px; font-weight: bold;">
-      <td style="border: none; background-color: transparent;">FIG.1-1 Original image</td>
-      <td style="border: none; background-color: transparent;">FIG.1-2 Heatmap</td>
-      <td style="border: none; background-color: transparent;">FIG.1-3 Contour extraction</td>
-      <td style="border: none; background-color: transparent;">FIG.1-4 Zoom in</td>
-    </tr>
-  </table>
-</div>
-<br>
+ - 版本簡述
 
----
+    version 2.0.0
 
-### **目錄** </span><br>
-[English Version ( Language Selection )](#english_version_title)<br><br>
-[簡介](#start)<br>
-[成果展示](#成果展示)<br>
-[I. 流程](#i-流程)<br>
-&emsp;[1. 影像前處理](#step1)<br>
-&emsp;[2. Labelme 遮罩產生](#step2)<br>
-&emsp;[3. 標記轉換](#step3)<br>
-&emsp;[4. 數據封裝](#step4)<br>
-&emsp;[5. 模型訓練與預測](#step5)<br>
-&emsp;[6. 後處理及計數](#step6)<br>
-&emsp;[Pipeline Architecture](#pipeline-architecture)<br>
-[II.環境需求](#ii-環境需求)<br>
-[III.未來計畫](#iii-未來計畫)<br>
-[特別感謝](#特別感謝)<br>
-[關於作者](#關於作者)<br>
+    ```text
+    - CLI 操作系統
+    - Local API Server
+    - System decoupling
+    ```
 
----
+## 結果範例
 
-### I. 流程</span><br>
-<span style="font-size: 12px;">
-請依序執行以下檔案及功能。<br><br>
+<table>
+  <tr>
+    <td><img src="./pictures/20211224_origin.png" width="190" alt="Original image"></td>
+    <td><img src="./pictures/20211224_heatmap.png" width="190" alt="Heatmap"></td>
+    <td><img src="./pictures/20211224_counter.png" width="190" alt="Contour overlay"></td>
+    <td><img src="./pictures/point1.png" width="190" alt="Zoom-in view"></td>
+  </tr>
+  <tr>
+    <td align="center">FIG. 1-1 Original Image</td>
+    <td align="center">FIG. 1-2 Heatmap</td>
+    <td align="center">FIG. 1-3 Contour Overlay</td>
+    <td align="center">FIG. 1-4 Zoom-in View</td>
+  </tr>
+</table>
 
-1. 影像前處理 ( `01_figure_preprocessing.ipynb` )<a name="step1"></a><br>
-初次使用時先執行一次以產生所需目錄，將預定將轉為 training set 的訓練圖片原圖放入 `preprocessing_input` 資料夾，執行第二次程式將會讀取 `preprocessing_input` 資料夾中的圖片進行處理。輸出經數值調整、雙通道灰階及切割後圖片。<br>
-    * 技術 : 使用 CLAHE 調整影像直方圖<br>
-使用 Sliding Window 切割影像，預設尺寸為 `tile_size=256`, `overlap=30`<br>
-    * 輸出 : 輸出 `.png` 至 `preprocessing_output` 及 `preprocessing_check` 資料夾。<br>
-      (`preprocessing_check` 檔案為經數值調整、雙通道灰階但未切割原尺寸圖，供人工檢查)<br><br>
+## 目錄
 
-2. Labelme 遮罩產生<a name="step2"></a><br>
-透過開源軟體做人工 data label。在 Labelme 中指定讀取 `preprocessing_output` 資料夾，進行細胞範圍手動標記。<br>
-    * 輸出 : 輸出 `.json` 至 `preprocessing_output` 資料夾<br><br>
 
-3. 標記轉換 ( `02_cell_label_mask.ipynb` )<a name="step3"></a><br>
-讀取 `preprocessing_output` 資料夾，將 Labelme 結果 `.json` 轉換成黑白遮罩圖。<br>
-    * 技術 : 使用 Binary Mask 二值化將 Labelme 生成的 `.json` 格式轉換為黑白遮罩圖<br>
-    * 輸出 : 輸出 `.png` 至 `masks_output` 和 `masks_check` 資料夾<br>
-( `masks_check` 資料夾為合併灰階圖及遮罩，供人工檢查)<br><br>
+## 專案特色
 
-4. 數據封裝 ( `03_data_package_h5_generation.ipynb` )<a name="step4"></a><br>
-整合影像與遮罩並寫入 `.h5`。<br>
-    * 技術 : 使用 h5py 將影像與遮罩封裝成 `.h5`<br>
-    * 輸出 : 輸出 `.h5` 至同級目錄<br><br>
+ - CLI 與 Local API Server 作為主要使用介面
+ - Local API Server 提供 `GET /health` 與 `POST /predict`，讓地端 agent、GUI 或其他程式可以透過 HTTP 呼叫
+ - Post processing 輸出 origin image、heatmap、counter overlay 與文字報告
 
-5. 模型訓練與預測 ( `04_model.ipynb` )<a name="step5"></a><br>
-    * 訓練模式<br>
-      `main block` 預設 `mode='prediction'`，訓練時先改成 `mode='train'`，讀取來自數據封裝結果的 `.h5` 進行訓練。<br>
-      * 架構 : UNet<br>
-      * Loss function : BCE Loss function 結合 Dice Loss function<br>
-    * 預測模式<br>
-      初次使用時先執行一次以產生所需目錄，將需要分析的影像放入 `prediction_input` 資料夾，設定 `mode='prediction'`，讀取作者提供同級目錄的預訓練權重紀錄 (或自行訓練的權重紀錄) 進行預測，輸出 probability map。<br>
-      * 技術 : 使用 weight mask 處理邊界拼時的痕跡<br>
-      * 輸出 : 輸出 `.h5` 至 `prediction_result` 資料夾<br><br>
+## 檔案結構
 
-6. 後處理及計數 ( `05_post_processing.ipynb` )<a name="step6"></a><br>
-讀取 `prediction_result` 資料夾中的 `.h5`，將 probability map 轉換為 label map, heatmap 及計數輸出(兩類輸出圖及統計數字皆不包含接觸影像邊界的細胞)。<br>
-    * 技術 : 使用 distance transform 計算距離變換<br>
-使用 Watershed algorithm 對細胞核區域做分割<br>
-    * 輸出 : 輸出一個輸入 `.h5` 對應檔名的資料夾，在資料夾中輸出 label map, heatmap 及原圖的 `.png` 檔案及 `.txt` 計數結果<br>
-
-### Pipeline Architecture <a name="pipeline-architecture"></a>
-<span style="font-size: 12px;">
-<div align="center">
-<img src="./pictures/Pipeline Architecture.png"style="width: 80%;" alt="pipline"><br><br>
-</div>
-
-### II. 環境需求</span><br>
-<span style="font-size: 12px;">
-
-* 開發環境 `Python 3.13`, `PyTorch 2.10`, `Labelme 5.10`, `Jupyter Notebook 7.5`, `JupyterLab 4.5`<br>
-* 建議使用 `conda` 或 `venv` 建立虛擬環境<br>
-* 使用 AMD GPU 時以 `Python 3.12` 或以下版本建立 `torch_directml` 的相容環境<br>
-* 自行建立訓練集時需下載 `labelme` 套件<br><br>
-
-* 安裝套件
-
-```bash
-pip install numpy pandas opencv-python scikit-image matplotlib torch torchvision torch-directml h5py scipy
+```text
+.
+├─ main.py
+├─ requirements.txt
+├─ README.md
+├─ configs/
+│  ├─ preprocessing_config.yaml
+│  ├─ training_config.yaml
+│  ├─ prediction_config.yaml
+│  ├─ postprocessing_config.yaml
+│  └─ api_config.yaml
+├─ src/
+│  ├─ __init__.py
+│  ├─ config.py
+│  ├─ image_preprocessing.py
+│  ├─ labelme_masks.py
+│  ├─ dataset_h5.py
+│  ├─ model.py
+│  ├─ train.py
+│  ├─ predict.py
+│  ├─ post_processing.py
+│  └─ orchestrator.py
+├─ api/
+│  ├─ __init__.py
+│  ├─ schemas.py
+│  ├─ service.py
+│  └─ server.py
+├─ pictures/
+│  └─ ...
+└─ unet_cellcount_model.pth
 ```
 
+## 環境需求
 
-* 安裝Labelme
+ - 開發環境使用 `Python 3.12`
+
+ - 建立虛擬環境
+
+    - 建立 `Python 3.12` 環境
+
+        ```bash
+        conda create -n anuc python=3.12 -y
+        ```
+
+    - 啟動環境
+    
+        ```bash
+        conda activate anuc
+        ```
+
+ - 安裝套件
+
+    - 一鍵安裝
+
+        ```bash
+        pip install "opencv-python>=4.9" "numpy>=1.26" "h5py>=3.10" "PyYAML>=6.0" torch torch-directml matplotlib scipy scikit-image fastapi pydantic uvicorn
+        ```
+
+    - 或是使用預寫好的 `requirements.txt` 安裝
+
+        ```bash
+        pip install -r requirements.txt
+        ```
+
+ - 安裝 Lebalme
+
+    如要自行建立 train set 需下載開源標記軟體 Lebalme 並手動標記
+
+    ```bash
+    pip install labelme
+    ```
+## 快速開始
+
+使用並載入專案內提供的預訓練權重紀錄，直接使用 prediction 模式進行影像辨識功能。
+
+以 PowerShell CLI 介面執行 :
+
+### 1. 系統初始化
 
 ```bash
-pip install labelme
+python main.py anuc init
 ```
 
-### III. 未來計畫</span><br>
-最初專案建地動機為作者過去任職 wet lab 進行研究與開發工作，執行 IFA 蛋白質位置 overlap 分析時遇到細胞分割困難、計算繁瑣且耗時，因此嘗試開發更省時的自動化系統。目前版本先完成對細胞核位置的定位與細胞分割部分。未來將強化細胞分割與形狀認知能力，並加入IFA其他通道圖並合併 Merge 圖分析 prorein colocolization。
-<br><br>
+### 2. 放入待分析影像
+
+在根目錄下找到 `prediction_input/` 並將須分析的影像檔放入此目錄
+
+### 3. 開始分析
+
+```bash
+python main.py anuc predict
+```
+
+### 4. 查看輸出結果
+
+ - Model 輸出的機率圖以 .h5 格式輸出至 `prediction_results/`
+
+ - 完成所有處理的結果會輸出至 `final_result/`
+
+    - 輸出結果預期:
+
+        ```text
+        .
+        └─ final_result/
+            ├─ {image_stem}_origin.png
+            ├─ {image_stem}_heatmap.png
+            ├─ {image_stem}_counter.png
+            └─ {timestamp}_report.txt
+        ```
+
+## 詳細使用說明
+
+ - `main.py` 入口支援 CLI 指令如下:
+
+    ```bash
+    python main.py init
+    python main.py preprocessing
+    python main.py mask
+    python main.py package
+    python main.py train run
+    python main.py anuc init
+    python main.py anuc predict
+    ```
+
+### Train mode
+
+#### 1. 系統初始化
+
+```bash
+python main.py init
+```
+
+建立 `preprocessing_input/` 目錄
+
+#### 2. 載入影像並完成前處理
+
+將預計作為 training set 的原始影像放入 `preprocessing_input/` 後，執行：
+
+```bash
+python main.py preprocessing
+```
+
+ - 影像前處理
+    
+     - 技術 (影像增強及切割) :
+
+        ```text
+        - Bilateral Filter
+        - CLAHE
+        - Sliding Window
+        ```
+
+     - 輸出 :
+
+        ```text
+        preprocessing_output/{image_stem}_y{y}_x{x}.png
+        preprocessing_check/enhanced_{original_image_name}
+        ```
+
+#### 3. Labelme 人工標記
+
+ - 在終端開啟 Labelme
+
+    ```bash
+    labelme
+    ```
+    
 
 
-### 特別感謝</span><br>
+
+## 特別感謝</span><br>
 感謝 <a href="https://www.erixnet.com/">EriXNet</a> 對開發的協助與顧問工作<br><br>
 
----
-
-### 關於作者<br>
+## 關於作者<br>
 林修渝 Hsiu-Yu, Lin</span><br>
 <span style="font-size: 12px; font-weight: bold;">
 臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br>
-生物化學碩士，曾任職中央研究院生醫所研究助理，現職為人工智慧生物醫學資料科學家。專長是生物化學、癌症細胞生物學、外泌體分析及生物醫學影像分析。<br><br>
+生物化學碩士，曾任職中央研究院生醫所研究助理，現職 ai 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體及生物醫學數據分析、。<br><br>
 Hsiu-Yu, Lin</span><br>
-A biomedical data scientist hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.<br>
+A ai bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.<br>
 I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Biomedical Data Scientist, and specialize in biochemistry, cancer biology, and biomedical image analysis.<br><br>
 GitHub : https://github.com/hsiuyulin09
 </span>
@@ -154,66 +234,3 @@ GitHub : https://github.com/hsiuyulin09
 &emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupter logo">
 &emsp;<img src="./pictures/icon-256.png"style="width: 4%;" alt="labelme logo">
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="erixnet logo">
-
-</span>
-<br><br><br><br><br>
-
-## **Automatic Cell Nuclei Detection and Counting System** <a name="english_version_title"></a></span><br><br>
-
-<p align="left">
-  <img src="./pictures/logo.png" align="left" width="200" style="margin-right: 20px;">
-  <br>
-  <b><a name="e_start"></a>This project provides a complete end-to-end system, covering preprocessing, image analysis models, and postprocessing. It is designed for analyzing DAPI-channel fluorescence microscopy images from immunofluorescence assays (IFA). The pipeline includes image enhancement, patch-based image segmentation, a U-Net model implemented in PyTorch, and final cell localization and counting using the watershed algorithm.</b><br>
-</p>
-<br clear="left"/>
-
-### Results
-
-<div align="center">
-  <table style="border: none; border-collapse: collapse; background-color: transparent;">
-    <tr style="border: none; background-color: transparent;">
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_origin.png" width="190" alt="Original">
-      </td>
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_heatmap.png" width="190" alt="Heatmap">
-      </td>
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/20211224_counter.png" width="190" alt="Contour">
-      </td>
-      <td style="border: none; background-color: transparent; padding: 5px; width: 25%;">
-        <img src="./pictures/point1.png" width="190" alt="Zoom in">
-      </td>
-    </tr>
-    <tr style="border: none; background-color: transparent; font-size: 6px; font-weight: bold;">
-      <td style="border: none; background-color: transparent;">FIG.1-1 Original image</td>
-      <td style="border: none; background-color: transparent;">FIG.1-2 Heatmap</td>
-      <td style="border: none; background-color: transparent;">FIG.1-3 Contour extraction</td>
-      <td style="border: none; background-color: transparent;">FIG.1-4 Zoom in</td>
-    </tr>
-  </table>
-</div>
-<br>
-
----
-
-### I. Workflow</span><br>
-<span style="font-size: 12px;">
-Please follow the steps below and run the corresponding files and functions in sequence.<br><br>
-
-1. **Image Preprocessing** ( `01_figure_preprocessing.ipynb` ) <a name="e_step1"></a><br>
-For the initial run, execute the notebook once to generate the required directories. Place the original images intended for the training set into the `preprocessing_input` folder. Running the notebook a second time will process the images in this folder. The output includes intensity-adjusted images, dual-channel grayscale images, and cropped image patches.<br>
-    * **Techniques** : Apply CLAHE (Contrast Limited Adaptive Histogram Equalization) for histogram adjustment<br>
-Use a sliding window approach for image tiling (default: `tile_size=256`, `overlap=30`)<br>
-    * **Output** : Export `.png` files to the `preprocessing_output` and `preprocessing_check` folder<br>
-      (Files in `preprocessing_check` are intensity-adjusted, dual-channel grayscale images that retain their original size (not cropped), intended for manual inspection)<br><br>
-
-2. **Mask Generation with Labelme** <a name="e_step2"></a><br>
-Use the open-source tool Labelme to perform manual data labeling. Load images from the `preprocessing_output` folder in Labelme and manually annotate cell regions.<br>
-    * **Output** : Export `.json` files to the `preprocessing_output` folder <br><br>
-
-3. **Label Conversion** ( `02_cell_label_mask.ipynb` )<a name="step3"></a><br>
-Read data from the `preprocessing_output` folder and convert Labelme-generated `.json` files into binary mask images.<br>
-    * **Techniques** : Apply binary masking to convert Labelme `.json` annotations into black-and-white mask images <br>
-    * **Output** : Export `.png` files to `masks_output` and `masks_check` floders<br>
-(The `masks_check` floder contains overlays of grayscale images and masks for manual inspection)<br><br>

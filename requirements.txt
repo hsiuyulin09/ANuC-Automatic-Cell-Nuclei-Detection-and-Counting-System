@@ -8,3 +8,6 @@ torch-directml
 matplotlib
 scipy
 scikit-image
+fastapi
+pydantic
+uvicorn
