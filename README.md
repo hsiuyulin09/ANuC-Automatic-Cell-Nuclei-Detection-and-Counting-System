@@ -144,7 +144,7 @@
     ```
 ## 快速開始
 
-使用並載入專案內提供的預訓練權重紀錄，直接使用 prediction 模式進行影像辨識功能。
+使用並載入專案內提供的預訓練權重紀錄，直接使用 prediction 模式進行影像辨識功能
 
 以 PowerShell CLI 介面執行 :
 
@@ -424,9 +424,9 @@ Request body：
 
 ### 執行 Prediction mode
 
-以下 `curl` 指令主要用於開發或測試階段，模擬外部程式呼叫 API 的行為。
+以下 `curl` 指令主要用於開發或測試階段，模擬外部程式呼叫 API 的行為
 
-正式整合時，可由其他程式透過 HTTP request 呼叫相同 endpoint。
+正式整合時，可由其他程式透過 HTTP request 呼叫相同 endpoint
 
  - 不指定 config path：
 
@@ -463,9 +463,9 @@ Request body：
     }
     ```
 
-    欄位皆為 optional。
+    欄位皆為 optional
 
-    user 未提供時，會使用 `api_config.yaml` 中設定的預設 config path。
+    user 未提供時，會使用 `api_config.yaml` 中設定的預設 config path
 
     帶 config path 的 `curl` 測試指令：
 
@@ -500,13 +500,13 @@ Request body：
 - 取得 polygon points
 - `cv2.fillPoly()` 建立 binary mask
 
-#### 數據封裝
+### 數據封裝
 
 - 使用 H5 儲存 train / validation images 與 masks
 - 讀取 H5 轉為 PyTorch tensor
 - training mode 下支援旋轉與亮度 augmentation
 
-#### Model
+### Model
 
 UNet：
 
@@ -516,13 +516,13 @@ UNet：
 - skip connection
 - final convolution
 
-#### Loss Function
+### Loss Function
 
 ```text
 BCEWithLogitsLoss + DiceLoss
 ```
 
-#### Device Selection
+### Device Selection
 
 預設選擇順序：
 
@@ -530,7 +530,7 @@ BCEWithLogitsLoss + DiceLoss
 2. DirectML (AMD GPU)
 3. CPU
 
-#### Post-processing
+### Post-processing
 
 - probability threshold
 - Euclidean distance transform
