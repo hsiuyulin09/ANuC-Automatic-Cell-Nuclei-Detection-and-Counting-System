@@ -59,7 +59,7 @@ def prediction_model(config):
 
     image_files = [
         img_path for img_path in sorted(input_path.iterdir())
-        if img_path.is_file() and img_path.suffix().lower() in image_extensions
+        if img_path.is_file() and img_path.suffix.lower() in image_extensions
     ]
         # .iterdir() 列出這個資料夾底下第一層的所有項目
         # .is_file() 檢查這個路徑是不是檔案, 回傳 boolean

@@ -78,7 +78,7 @@ def load_command_config(args): # 讀取 CLI 對應 config(.yaml)
     if args.command == "train" and args.training_command == "run":
         return load_config(DEFAULT_TRAINING_CONFIG)
     
-    if args.command == "anuc" and args.aunc_commands == "init":
+    if args.command == "anuc" and args.anuc_commands == "init":
         return load_config(DEFAULT_PREDICTION_CONFIG)
     
     raise ValueError(f"unsupported command for config loading. {args.command}") # user 指令無法識別則跳脫
@@ -152,7 +152,7 @@ def dispatch(args):
         run_train(args)
         return
     
-    if args.command == "anuc" and args.aunc_commands == "init":
+    if args.command == "anuc" and args.anuc_commands == "init":
         run_anuc_init(args)
         return
     

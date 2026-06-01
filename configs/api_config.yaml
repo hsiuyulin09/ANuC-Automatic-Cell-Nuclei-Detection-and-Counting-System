@@ -1,0 +1,11 @@
+server:
+  host: 127.0.0.1
+  port: 8000
+
+configs:
+  prediction_config: configs/prediction_config.yaml
+  postprocessing_config: configs/postprocessing_config.yaml
+
+api:
+  title: ANuC Local API Server
+  version: 2.0.0

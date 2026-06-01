@@ -74,6 +74,11 @@ def create_h5_dataset(config):
     print(f"dataset composition. cell positive image {len(positive_samples)}, cell empty image {len(empty_samples)} \n total image {len(total_samples)}")
 
     total = len(total_samples)
+
+    if total < 2:
+        print("not enough samples to split train/val. at least 2 samples are required")
+        return
+    
     train_end = int(total * split[0])
     train_end = max(1, min(train_end, total - 1))
 
