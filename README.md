@@ -187,13 +187,12 @@ python main.py preprocessing
 
  - 影像前處理
     
-     - 技術 (影像增強及切割) :
+     - 技術 :
 
-        ```text
         - Bilateral Filter
         - CLAHE
         - Sliding Window
-        ```
+
 
      - 輸出 :
 
@@ -209,21 +208,288 @@ python main.py preprocessing
     ```bash
     labelme
     ```
+
+ - 設定 Labelme 中 label 為 "cell"
+
+ - Labelme 會於檔案來源目錄輸出 `JSON`
+
+#### 4. Binary Mask 轉換
+
+```bash
+python main.py mask
+```
+
+ - 讀取 Labelme `.json`，將 polygon points 轉換為 binary mask
+
+     - 技術：
+
+        - Labelme JSON parsing
+        - OpenCV
+        - Binary mask generation
+
+
+     - 輸出：
+
+        ```text
+        masks_output/{tile_stem}_mask.png
+        masks_check/check_{tile_stem}.png
+        ```
+
+#### 5. 數據封裝
+
+```bash
+python main.py package
+```
+
+ - 整合 tile image 與對應 mask，並寫入 `.h5` dataset
+
+     - 技術：
+
+        - h5py
+        - positive / empty sample selection
+        - train / validation split
+
+     - 輸出：
+
+        ```text
+        datasets/cell_dataset.h5
+        ```
+
+     - cell_dataset.h5 structure
+
+        ```text
+        {
+            "train": {
+                "images": "shape = (train_count, H, W, C), dtype = uint8",
+                "masks": "shape = (train_count, H, W), dtype = uint8",
+            },
+            "val": {
+                "images": "shape = (val_count, H, W, C), dtype = uint8",
+                "masks": "shape = (val_count, H, W), dtype = uint8",
+            },
+        }
+        ```
+
+#### 6. 模型訓練
+
+##### 6-1. 系統初始化
+
+```bash
+python main.py anuc init
+```
+
+建立 `prediction_input/` 目錄
+
+
+##### 6-2. 載入影像
+
+根目錄下找到 `prediction_input/` 並將須分析的影像檔放入此目錄
+
+預設支援副檔名 `.jpg`, `.jpeg`, `.tif`, `.png`
+
+##### 6-3. 開始分析
+
+```bash
+python main.py anuc predict
+```
+
+ - 技術：
+
+    - Sliding Window Prediction
+    - UNet
+    - Weight mask overlap blending
+    - Watershed Segmentation Algorithm
+
+ - 輸出：
+
+    ```text
+    prediction_results/{timestamp}.h5
+    final_result/{timestamp}/...
+    ```
+
+## Local API Server
+
+API 目前僅支援 prediction mode
+
+### API Config
+
+預設 API 環境
+
+`configs/api_config.yaml`：
+
+```yaml
+server:
+  host: 127.0.0.1
+  port: 8000
+
+configs:
+  prediction_config: configs/prediction_config.yaml
+  postprocessing_config: configs/postprocessing_config.yaml
+
+api:
+  title: ANuC Local API Server
+  version: 2.0.0
+```
     
+### 啟動 API Server
+
+```bash
+uvicorn api.server:app --host 127.0.0.1 --port 8000
+```
+
+FastAPI 文件頁面：
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### Health Check
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Request line / headers：
+
+```http
+GET /health HTTP/1.1
+Host: 127.0.0.1:8000
+Accept: application/json
+```
+
+Request body：
+
+```text
+(empty)
+```
+
+回傳內容：
+
+```json
+{
+  "status": "ok"
+}
+```
+
+### 執行 Prediction mode
+
+```bash
+curl -X POST http://127.0.0.1:8000/predict
+```
+
+Request line / headers：
+
+```http
+POST /predict HTTP/1.1
+Host: 127.0.0.1:8000
+Accept: application/json
+```
+
+Request body：
+
+可空白
+
+```text
+(empty)
+```
+
+或是帶有任意指定路徑
+
+```json
+{
+  "api_config_path": "configs/api_config.yaml",
+  "prediction_config_path": "configs/prediction_config.yaml",
+  "postprocessing_config_path": "configs/postprocessing_config.yaml"
+}
+```
+
+欄位皆為 optional
+
+user 未提供，則使用 `api_config.yaml` 的預設值
+
+回傳內容：
+
+```json
+{
+  "status": "complete",
+  "message": "prediction pipeline complete",
+  "prediction_results": "prediction_results",
+  "final_result": "final_result"
+}
+```
+
+## 技術整合說明
+
+### Image Preprocessing
+
+ - Bilateral Filter
+ - CLAHE
+ - Sliding Window
+
+### Mask Generation
+
+- 取得 polygon points
+- `cv2.fillPoly()` 建立 binary mask
+
+#### 數據封裝
+
+- 使用 H5 儲存 train / validation images 與 masks
+- 讀取 H5 轉為 PyTorch tensor
+- training mode 下支援旋轉與亮度 augmentation
+
+#### Model
+
+UNet：
+
+- encoder
+- max pooling
+- decoder
+- skip connection
+- final convolution
+
+#### Loss Function
+
+```text
+BCEWithLogitsLoss + DiceLoss
+```
+
+#### Device Selection
+
+預設選擇順序：
+
+1. NVDIA CUDA
+2. DirectML (AMD GPU)
+3. CPU
+
+#### Post-processing
+
+- probability threshold
+- Euclidean distance transform
+- Gaussian smoothing
+- peak local max
+- watershed segmentation
+- contour extraction
+- output: heatmap / counter / report output
 
 
 
-## 特別感謝</span><br>
-感謝 <a href="https://www.erixnet.com/">EriXNet</a> 對開發的協助與顧問工作<br><br>
+## 特別感謝
+感謝 <a href="https://www.erixnet.com/">EriXNet</a> 對開發的協助與顧問工作
 
-## 關於作者<br>
-林修渝 Hsiu-Yu, Lin</span><br>
-<span style="font-size: 12px; font-weight: bold;">
-臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。<br>
-生物化學碩士，曾任職中央研究院生醫所研究助理，現職 ai 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體及生物醫學數據分析、。<br><br>
-Hsiu-Yu, Lin</span><br>
-A ai bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.<br>
-I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Biomedical Data Scientist, and specialize in biochemistry, cancer biology, and biomedical image analysis.<br><br>
+## 關於作者
+
+林修渝 Hsiu-Yu, Lin
+
+臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。
+
+生物化學碩士，曾任職中央研究院生醫所研究助理，現職 ai 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體、生物醫學數據分析、LLM 應用部屬、RAG、Agent Skill。
+
+Hsiu-Yu, Lin
+
+A ai bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.
+
+I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Biomedical Data Scientist, and specialize in biochemistry, cancer biology, and biomedical image analysis.
+
 GitHub : https://github.com/hsiuyulin09
 </span>
 <br><br>
