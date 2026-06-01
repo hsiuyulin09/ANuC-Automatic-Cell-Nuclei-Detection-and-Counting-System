@@ -24,7 +24,7 @@ def list_labelme_jsons(input_folder): # 取得 labelme json 檔的檔名清單 #
     input_path = Path(input_folder)
 
     if not input_path.exists():
-        raise FileNotFoundError("lebalme input dir not exist")
+        raise FileNotFoundError("Labelme input dir not exist")
     
     labelme_jsons_list = sorted(input_path.glob("*.json")) # sorted() 將找到的路徑排序並回傳 list
 

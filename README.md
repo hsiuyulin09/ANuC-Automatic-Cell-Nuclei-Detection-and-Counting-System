@@ -34,6 +34,34 @@
 
 ## 目錄
 
+- [簡介](#簡介)
+- [結果範例](#結果範例)
+- [專案特色](#專案特色)
+- [檔案結構](#檔案結構)
+- [環境需求](#環境需求)
+- [快速開始](#快速開始)
+  - [1. 系統初始化](#1-系統初始化)
+  - [2. 放入待分析影像](#2-放入待分析影像)
+  - [3. 開始分析](#3-開始分析)
+  - [4. 查看輸出結果](#4-查看輸出結果)
+- [詳細使用說明](#詳細使用說明)
+  - [Train mode](#train-mode)
+  - [Predict mode](#predict-mode)
+- [Local API Server](#local-api-server)
+  - [API Config](#api-config)
+  - [啟動 API Server](#啟動-api-server)
+  - [Health Check](#health-check)
+  - [執行 Prediction mode](#執行-prediction-mode)
+- [技術整合說明](#技術整合說明)
+  - [Image Preprocessing](#image-preprocessing)
+  - [Mask Generation](#mask-generation)
+  - [數據封裝](#數據封裝)
+  - [Model](#model)
+  - [Loss Function](#loss-function)
+  - [Device Selection](#device-selection)
+  - [Post-processing](#post-processing)
+- [特別感謝](#特別感謝)
+- [關於作者](#關於作者)
 
 ## 專案特色
 
@@ -101,15 +129,15 @@
         pip install "opencv-python>=4.9" "numpy>=1.26" "h5py>=3.10" "PyYAML>=6.0" torch torch-directml matplotlib scipy scikit-image fastapi pydantic uvicorn
         ```
 
-    - 或是使用預寫好的 `requirements.txt` 安裝
+    - 或使用預寫好的 `requirements.txt` 安裝
 
         ```bash
         pip install -r requirements.txt
         ```
 
- - 安裝 Lebalme
+ - 安裝 Labelme
 
-    如要自行建立 train set 需下載開源標記軟體 Lebalme 並手動標記
+    如要自行建立 train set 需下載開源標記軟體 Labelme 並手動標記
 
     ```bash
     pip install labelme
@@ -147,10 +175,11 @@ python main.py anuc predict
         ```text
         .
         └─ final_result/
-            ├─ {image_stem}_origin.png
-            ├─ {image_stem}_heatmap.png
-            ├─ {image_stem}_counter.png
-            └─ {timestamp}_report.txt
+            └─ {h5_filename}/
+                ├─ {image_stem}_origin.png
+                ├─ {image_stem}_heatmap.png
+                ├─ {image_stem}_counter.png
+                └─ {timestamp}_report.txt
         ```
 
 ## 詳細使用說明
@@ -270,9 +299,29 @@ python main.py package
         }
         ```
 
-#### 6. 模型訓練
+#### 6. 開始訓練
 
-##### 6-1. 系統初始化
+```bash
+python main.py train run
+```
+
+ - 技術：
+
+    - PyTorch
+    - UNet
+    - BCEWithLogitsLoss
+    - DiceLoss
+    - Adam optimizer
+
+ - 輸出：
+
+    ```text
+    unet_cellcount_model.pth
+    ```
+
+### Predict mode
+
+#### 1. 系統初始化
 
 ```bash
 python main.py anuc init
@@ -281,13 +330,13 @@ python main.py anuc init
 建立 `prediction_input/` 目錄
 
 
-##### 6-2. 載入影像
+#### 2. 載入影像
 
 根目錄下找到 `prediction_input/` 並將須分析的影像檔放入此目錄
 
 預設支援副檔名 `.jpg`, `.jpeg`, `.tif`, `.png`
 
-##### 6-3. 開始分析
+#### 3. 開始分析
 
 ```bash
 python main.py anuc predict
@@ -310,6 +359,8 @@ python main.py anuc predict
 ## Local API Server
 
 API 目前僅支援 prediction mode
+
+(目前 API 是 folder-based prediction API，不是 upload API。也就是使用者要先把影像放到 `prediction_input/`，再呼叫 `/predict`)
 
 ### API Config
 
@@ -373,50 +424,68 @@ Request body：
 
 ### 執行 Prediction mode
 
-```bash
-curl -X POST http://127.0.0.1:8000/predict
-```
+以下 `curl` 指令主要用於開發或測試階段，模擬外部程式呼叫 API 的行為。
 
-Request line / headers：
+正式整合時，可由其他程式透過 HTTP request 呼叫相同 endpoint。
 
-```http
-POST /predict HTTP/1.1
-Host: 127.0.0.1:8000
-Accept: application/json
-```
+ - 不指定 config path：
 
-Request body：
+    ```bash
+    curl -X POST http://127.0.0.1:8000/predict
+    ```
 
-可空白
+    Request line / headers：
 
-```text
-(empty)
-```
+    ```http
+    POST /predict HTTP/1.1
+    Host: 127.0.0.1:8000
+    Accept: application/json
+    Content-Type: application/json
+    ```
 
-或是帶有任意指定路徑
+    Request body：
 
-```json
-{
-  "api_config_path": "configs/api_config.yaml",
-  "prediction_config_path": "configs/prediction_config.yaml",
-  "postprocessing_config_path": "configs/postprocessing_config.yaml"
-}
-```
+    可空白
 
-欄位皆為 optional
+    ```text
+    (empty)
+    ```
 
-user 未提供，則使用 `api_config.yaml` 的預設值
+ - 指定 config path
 
-回傳內容：
+    Request body：
 
-```json
-{
-  "status": "complete",
-  "message": "prediction pipeline complete",
-  "prediction_results": "prediction_results",
-  "final_result": "final_result"
-}
-```
+    ```json
+    {
+        "api_config_path": "configs/api_config.yaml",
+        "prediction_config_path": "configs/prediction_config.yaml",
+        "postprocessing_config_path": "configs/postprocessing_config.yaml"
+    }
+    ```
+
+    欄位皆為 optional。
+
+    user 未提供時，會使用 `api_config.yaml` 中設定的預設 config path。
+
+    帶 config path 的 `curl` 測試指令：
+
+    ```bash
+    curl -X POST http://127.0.0.1:8000/predict ^
+        -H "Content-Type: application/json" ^
+        -H "Accept: application/json" ^
+        -d "{\"prediction_config_path\":\"configs/prediction_config.yaml\",\"postprocessing_config_path\":\"configs/postprocessing_config.yaml\"}"
+    ```
+
+    回傳內容：
+
+    ```json
+    {
+        "status": "complete",
+        "message": "prediction pipeline complete",
+        "prediction_results": "prediction_results",
+        "final_result": "final_result"
+    }
+    ```
 
 ## 技術整合說明
 
@@ -457,7 +526,7 @@ BCEWithLogitsLoss + DiceLoss
 
 預設選擇順序：
 
-1. NVDIA CUDA
+1. NVIDIA CUDA
 2. DirectML (AMD GPU)
 3. CPU
 
@@ -482,21 +551,20 @@ BCEWithLogitsLoss + DiceLoss
 
 臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。
 
-生物化學碩士，曾任職中央研究院生醫所研究助理，現職 ai 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體、生物醫學數據分析、LLM 應用部屬、RAG、Agent Skill。
+生物化學碩士，曾任職中央研究院生醫所研究助理，現職 AI 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體、生物醫學數據分析、LLM 應用部屬、RAG、Agent Skill。
 
 Hsiu-Yu, Lin
 
-A ai bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.
+A AI bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.
 
 I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Biomedical Data Scientist, and specialize in biochemistry, cancer biology, and biomedical image analysis.
 
 GitHub : https://github.com/hsiuyulin09
-</span>
 <br><br>
 
 <span style="font-size: 12px; font-weight: bold;">
-<img src="./pictures/Python.png"style="width: 7.6%;" alt="pyhton logo">
+<img src="./pictures/Python.png"style="width: 7.6%;" alt="python logo">
 <img src="./pictures/PyTorch_logo.png"style="width: 3.5%;" alt="pytorch logo">
-&emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupter logo">
+&emsp;<img src="./pictures/Jupyter_logo.png"style="width: 3.9%;" alt="jupyter logo">
 &emsp;<img src="./pictures/icon-256.png"style="width: 4%;" alt="labelme logo">
 &emsp;<img src="./pictures/erix.jpg"style="width: 13%;" alt="erixnet logo">
