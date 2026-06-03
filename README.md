@@ -66,7 +66,7 @@
 ## 專案特色
 
  - CLI 與 Local API Server 作為主要使用介面
- - Local API Server 提供 `GET /health` 與 `POST /predict`，讓地端 agent、GUI 或其他程式可以透過 HTTP 呼叫
+ - Local API Server 提供 `GET /health` 與 `POST /predict`，支援地端 agent、GUI 或其他程式透過 HTTP 呼叫
  - Post processing 輸出 origin image、heatmap、counter overlay 與文字報告
 
 ## 檔案結構
@@ -208,7 +208,7 @@ python main.py init
 
 #### 2. 載入影像並完成前處理
 
-將預計作為 training set 的原始影像放入 `preprocessing_input/` 後，執行：
+將預計作為 training set 的原始影像傳入 `preprocessing_input/` 後，執行：
 
 ```bash
 python main.py preprocessing
@@ -360,7 +360,7 @@ python main.py anuc predict
 
 API 目前僅支援 prediction mode
 
-(目前 API 是 folder-based prediction API，不是 upload API。也就是使用者要先把影像放到 `prediction_input/`，再呼叫 `/predict`)
+(目前 API 是 folder-based prediction API，非 upload API。User 須先把影像傳入 `prediction_input/` 再呼叫 `/predict`)
 
 ### API Config
 
@@ -551,13 +551,13 @@ BCEWithLogitsLoss + DiceLoss
 
 臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。
 
-生物化學碩士，曾任職中央研究院生醫所研究助理，現職 AI 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體、生物醫學數據分析、LLM 應用部屬、RAG、Agent Skill。
+我是一名生物化學碩士，曾任職中央研究院生醫所研究助理，現職 AI 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體、生物醫學數據分析、LLM 應用部屬、RAG、Agent Skill。
 
 Hsiu-Yu, Lin
 
 A AI bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.
 
-I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Biomedical Data Scientist, and specialize in biochemistry, cancer biology, and biomedical image analysis.
+I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Bioinformatics Engineer, and specialize in biochemistry, cancer cell biology, exosomes, biomedical data analysis, LLM application deployment, RAG, and Agent Skills.
 
 GitHub : https://github.com/hsiuyulin09
 <br><br>
