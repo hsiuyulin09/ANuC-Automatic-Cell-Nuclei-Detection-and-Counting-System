@@ -69,6 +69,43 @@
  - Local API Server 提供 `GET /health` 與 `POST /predict`，支援地端 agent、GUI 或其他程式透過 HTTP 呼叫
  - Post processing 輸出 origin image、heatmap、counter overlay 與文字報告
 
+## 架構
+
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#fffaf0", "primaryBorderColor": "#f4f6f8", "primaryTextColor": "#e2e5e9", "lineColor": "#111111", "fontFamily": "Arial"}}}%%
+flowchart TB
+    User[User]
+    Entry[CLI / Local API]
+    Config[Configs]
+    Mode{Mode}
+    Preprocess[Preprocess]
+    Labelme[Labelme]
+    Dataset[H5 Dataset]
+    Train[UNet Training]
+    Model[(Model Weight)]
+    Predict[Prediction]
+    Post[Post-processing]
+    Result[Final Result]
+
+    User ==> Entry ==> Config ==> Mode
+    Mode ==>|Train| Preprocess ==> Labelme ==> Dataset ==> Train ==> Model
+    Mode ==>|Predict| Predict ==> Post ==> Result
+    Model -. load .-> Predict
+    Entry -. POST /predict .-> Predict
+
+    classDef box fill:#fffaf0,stroke:#0b2a4a,stroke-width:2px,color:#0b2a4a;
+    classDef decision fill:#ffffff,stroke:#0b2a4a,stroke-width:2px,color:#0b2a4a;
+    classDef artifact fill:#ffe3ad,stroke:#0b2a4a,stroke-width:2px,color:#0b2a4a;
+    classDef output fill:#0b2a4a,stroke:#0b2a4a,stroke-width:2px,color:#ffffff;
+
+    class User,Entry,Config,Preprocess,Labelme,Train,Predict,Post box;
+    class Mode decision;
+    class Dataset,Model artifact;
+    class Result output;
+```
+
+
+
 ## 檔案結構
 
 ```text
@@ -547,15 +584,15 @@ BCEWithLogitsLoss + DiceLoss
 
 ## 關於作者
 
-林修渝 Hsiu-Yu, Lin
+林修渝 LIN, Hsiu-Yu
 
 臺灣人，來自台南市。喜歡戰錘40k、喜歡音樂、喜歡騎車、喜歡一切亂七八糟對工作沒什麼幫助的事情。
 
 我是一名生物化學碩士，曾任職中央研究院生醫所研究助理，現職 AI 生物資訊工程師。專長是生物化學、癌症細胞生物學、外泌體、生物醫學數據分析、LLM 應用部屬、RAG、Agent Skill。
 
-Hsiu-Yu, Lin
+Lin, Hsiu-Yu
 
-A AI bioinformatic engineer hailing from Tainan, Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.
+A AI bioinformatic engineer hailing from Taiwan. I’m passionate about Warhammer 40k, music, motorcycle touring, and baseball. Basically, anything and everything that has absolutely nothing to do with my job.
 
 I am a Master of Biochemistry and a former Research Assistant at the Institute of Biomedical Science, Academia Sinica. Now, I work as an AI Bioinformatics Engineer, and specialize in biochemistry, cancer cell biology, exosomes, biomedical data analysis, LLM application deployment, RAG, and Agent Skills.
 
